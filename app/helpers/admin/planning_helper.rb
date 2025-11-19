@@ -1,0 +1,2 @@
+module Admin::PlanningHelper
+end

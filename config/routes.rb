@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   root "homes#index"
 
   namespace :admin do
+    get 'planning/index'
     get 'chantiers/index'
     get 'chantiers/new'
     get 'chantiers/create'
@@ -23,10 +24,11 @@ Rails.application.routes.draw do
     get 'users/update'
     get 'users/destroy'
     root to: "dashboard#index"  # /admin
+    get 'planning', to: 'planning#index'
     resources :chantiers
     resources :trucks
     resources :users
     resources :daily_assignments
-    resources :interventions
+    resources :interventions, only: [:create,:update, :destroy]
   end
 end

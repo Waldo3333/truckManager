@@ -1,0 +1,70 @@
+/ app/views/admin/planning/index.html.slim
+.container.mx-auto.px-4.py-8
+  h1.text-3xl.font-bold.mb-6 Planning des interventions
+
+  / Sélecteurs
+  .bg-white.rounded-lg.shadow.p-4.mb-6.flex.gap-4.items-end
+    div
+      label.block.text-sm.font-medium.text-gray-700.mb-2 Date
+      = form_with url: admin_planning_path, method: :get, local: true, class: "flex gap-4" do |f|
+        = f.date_field :date, value: @selected_date, class: "px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        = f.hidden_field :truck_id, value: @selected_truck&.id
+        = f.submit "Changer", class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+
+    div
+      label.block.text-sm.font-medium.text-gray-700.mb-2 Camion
+      = form_with url: admin_planning_path, method: :get, local: true, class: "flex gap-4" do |f|
+        = f.select :truck_id, @trucks.map { |t| [t.name, t.id] }, { selected: @selected_truck&.id }, class: "px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        = f.hidden_field :date, value: @selected_date
+        = f.submit "Changer", class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+
+  / Layout principal : 2 colonnes
+  .grid.grid-cols-12.gap-6
+    / Colonne gauche : Chantiers disponibles
+    .col-span-3
+      .bg-white.rounded-lg.shadow.p-4
+        h2.text-lg.font-bold.mb-4 Chantiers à planifier
+
+        - if @chantiers.any?
+          .space-y-2 data-chantiers-list="true"
+            - @chantiers.each do |chantier|
+              .bg-gray-50.border.border-gray-300.rounded.p-3.cursor-move data-chantier-id=chantier.id data-chantier-duration=chantier.duration
+                .font-medium.text-sm = chantier.name
+                .text-xs.text-gray-500 = chantier.location
+                .text-xs.text-blue-600.mt-1
+                  = "📏 #{chantier.duration} min (#{chantier.duration_in_hours}h)"
+                - if chantier.scheduled_date.present?
+                  .text-xs.text-green-600.mt-1 = "📅 #{chantier.scheduled_date.strftime('%d/%m/%Y')}"
+                - else
+                  .text-xs.text-gray-400.italic.mt-1 Aucune date prévue
+        - else
+          p.text-gray-500.text-sm Aucun chantier disponible
+
+    / Colonne droite : Planning du camion
+    .col-span-9
+      .bg-white.rounded-lg.shadow.p-4
+        h2.text-lg.font-bold.mb-4
+          | Planning - #{@selected_truck&.name || "Sélectionner un camion"}
+          span.text-sm.font-normal.text-gray-500.ml-2 = @selected_date.strftime("%A %d %B %Y")
+
+        / Grille horaire
+        .relative.border.border-gray-300.rounded
+          / Heures (de 7h à 18h)
+          - (7..18).each do |hour|
+            .flex.border-b.border-gray-200 class=("border-b-0" if hour == 18)
+              / Colonne heure
+              .w-16.text-right.pr-2.py-2.text-sm.text-gray-600.bg-gray-50.border-r.border-gray-200
+                = "#{hour.to_s.rjust(2, '0')}:00"
+              / Zone drop
+              .flex-1.relative.min-h-16 data-drop-zone="true" data-hour=hour data-truck-id=@selected_truck&.id data-date=@selected_date
+                / Les interventions existantes (maintenant draggables)
+                - @interventions.select { |i| i.start_time.hour == hour }.each do |intervention|
+                  .absolute.left-0.right-0.bg-blue-100.border.border-blue-300.rounded.p-2.text-sm.cursor-move.group data-intervention-id=intervention.id data-chantier-id=intervention.chantier_id data-chantier-duration=intervention.chantier.duration
+                    .flex.justify-between.items-start
+                      div
+                        .font-medium = intervention.chantier.name
+                        .text-xs.text-gray-600
+                          = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
+                          = " (#{intervention.duration_in_minutes} min)"
+                      button.text-red-500.hover:text-red-700.opacity-0.group-hover:opacity-100.transition-opacity data-delete-intervention=intervention.id type="button"
+                        | ×
