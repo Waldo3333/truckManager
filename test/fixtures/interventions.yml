@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  truck: one
+  chantier: one
+  date: 2025-11-19
+  start_time: 2025-11-19 14:02:35
+  end_time: 2025-11-19 14:02:35
+
+two:
+  truck: two
+  chantier: two
+  date: 2025-11-19
+  start_time: 2025-11-19 14:02:35
+  end_time: 2025-11-19 14:02:35

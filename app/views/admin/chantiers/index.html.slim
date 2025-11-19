@@ -1,0 +1,28 @@
+/ app/views/admin/chantiers/index.html.slim
+.container.mx-auto.px-4.py-8
+  .flex.justify-between.items-center.mb-6
+    h1.text-3xl.font-bold Gestion des chantiers
+    = link_to "➕ Nouveau chantier", new_admin_chantier_path, class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+
+  .bg-white.rounded-lg.shadow.overflow-hidden
+    table.min-w-full.divide-y.divide-gray-200
+      thead.bg-gray-50
+        tr
+          th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase Nom
+          th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase Lieu
+          th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase Durée (minutes)
+          th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase Prévu le
+          th.px-6.py-3.text-right.text-xs.font-medium.text-gray-500.uppercase Actions
+      tbody.bg-white.divide-y.divide-gray-200
+        - @chantiers.each do |chantier|
+          tr
+            td.px-6.py-4.whitespace-nowrap.font-medium = chantier.name
+            td.px-6.py-4.whitespace-nowrap = chantier.location
+            td.px-6.py-4.whitespace-nowrap
+              = "#{chantier.duration} min"
+              span.text-gray-500.text-sm = " (#{chantier.duration_in_hours}h)"
+            td.px-6.py-4.whitespace-nowrap.text-sm.text-gray-500
+              = chantier.scheduled_date&.strftime("%d/%m/%Y") || content_tag(:span, "Aucune date prévue", class: "text-gray-400 italic")
+            td.px-6.py-4.whitespace-nowrap.text-right.text-sm.font-medium
+              = link_to "Modifier", edit_admin_chantier_path(chantier), class: "text-blue-600 hover:text-blue-900 mr-4"
+              = button_to "Supprimer", admin_chantier_path(chantier), method: :delete, data: { turbo_confirm: "Êtes-vous sûr ?" }, class: "text-red-600 hover:text-red-900"
