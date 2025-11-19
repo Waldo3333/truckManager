@@ -2,6 +2,15 @@
 .container.mx-auto.px-4.py-8
   h1.text-3xl.font-bold.mb-8 Dashboard Admin
 
+  / Bouton principal vers le planning
+  .mb-8
+    = link_to admin_planning_path, class: "block bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg shadow-lg p-6 transition-all transform hover:scale-105" do
+      .flex.items-center.justify-between
+        div
+          .text-2xl.font-bold 📅 Planning des interventions
+          .text-blue-100.mt-1 Gérer les interventions et les affectations de camions
+        .text-4xl →
+
   .grid.grid-cols-1.md:grid-cols-4.gap-6.mb-8
     / Card Chantiers
     .bg-white.rounded-lg.shadow.p-6
@@ -25,12 +34,11 @@
     .bg-white.rounded-lg.shadow.p-6
       .text-gray-500.text-sm.uppercase Interventions aujourd'hui
       .text-3xl.font-bold.mt-2 = @interventions_today
-      = link_to "Gérer", admin_interventions_path, class: "text-blue-500 text-sm mt-2 inline-block"
+      = link_to "Planning", admin_planning_path, class: "text-blue-500 text-sm mt-2 inline-block"
 
   .bg-white.rounded-lg.shadow.p-6
     h2.text-xl.font-bold.mb-4 Actions rapides
     .space-y-2
       = link_to "➕ Nouveau chantier", new_admin_chantier_path, class: "block text-blue-500 hover:underline"
       = link_to "🚛 Nouveau camion", new_admin_truck_path, class: "block text-blue-500 hover:underline"
-      = link_to "📅 Nouvelle intervention", new_admin_intervention_path, class: "block text-blue-500 hover:underline"
       = link_to "👤 Assigner un conducteur", new_admin_daily_assignment_path, class: "block text-blue-500 hover:underline"

@@ -1,21 +1,15 @@
+# app/controllers/admin/planning_controller.rb
 class Admin::PlanningController < ApplicationController
   before_action :require_admin
 
   def index
     @selected_date = params[:date]&.to_date || Date.today
-    @selected_truck = params[:truck_id].present? ? Truck.find(params[:truck_id]) : Truck.first
 
-    @trucks = Truck.all
+    @trucks = Truck.all.order(:name)
 
-    # Chantiers prévus pour la date sélectionnée + chantiers sans date
-    @chantiers = Chantier.where(scheduled_date: [@selected_date, nil])
-                         .left_joins(:interventions)
-                         .where(interventions: { id: nil })
-                         .or(Chantier.where(scheduled_date: [@selected_date, nil])
-                                     .left_joins(:interventions)
-                                     .where.not(interventions: { date: @selected_date }))
-
-    # Interventions du camion sélectionné pour la date
-    @interventions = @selected_truck&.interventions&.where(date: @selected_date)&.order(:start_time) || []
+    # Chantiers disponibles (pas encore planifiés ce jour)
+    planned_chantier_ids = Intervention.where(date: @selected_date).pluck(:chantier_id)
+    @chantiers = Chantier.where.not(id: planned_chantier_ids)
+                         .where("scheduled_date = ? OR scheduled_date IS NULL", @selected_date)
   end
 end
