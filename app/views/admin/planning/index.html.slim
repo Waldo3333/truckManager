@@ -1,5 +1,5 @@
 / app/views/admin/planning/index.html.slim
-.container-fluid.px-4.py-8
+.container-fluid.px-4.py-8 data-controller="modal"
   h1.text-3xl.font-bold.mb-6 Planning des interventions
 
   / Sélecteur de date
@@ -36,8 +36,8 @@
       .bg-white.rounded-lg.shadow.p-4
         / En-tête des heures
         .flex.mb-2
-          .w-32.flex-shrink-0
-            / Espace vide pour aligner avec les noms de camions
+          .w-48.flex-shrink-0
+            / Espace vide pour aligner avec les noms de camions + conducteurs
           .flex-1.flex
             - (7..18).each do |hour|
               .flex-1.text-center.text-xs.font-medium.text-gray-600.border-l.border-gray-200 style="min-width: 60px;"
@@ -45,10 +45,25 @@
 
         / Lignes de camions
         - @trucks.each do |truck|
-          .flex.border-t.border-gray-200.relative style="height: 80px;"
-            / Nom du camion
-            .w-32.flex-shrink-0.flex.items-center.px-3.bg-gray-50.border-r.border-gray-200
-              .font-medium.text-sm = truck.name
+          - assignment = @daily_assignments[truck.id]
+
+          .flex.border-t.border-gray-200.relative style="height: 100px;"
+            / Colonne : Nom du camion + Conducteur
+            .w-48.flex-shrink-0.flex.flex-col.justify-center.px-3.bg-gray-50.border-r.border-gray-200
+              .font-medium.text-sm.mb-2 = truck.name
+
+              - if assignment
+                / Conducteur assigné
+                .flex.items-center.justify-between.bg-green-50.border.border-green-200.rounded.px-2.py-1
+                  .flex.items-center.gap-1
+                    span.text-xs 👤
+                    span.text-xs.font-medium = assignment.user.email.split('@').first
+                  button.text-blue-500.hover:text-blue-700.text-xs data-action="click->modal#open" data-truck-id=truck.id data-date=@selected_date data-assignment-id=assignment.id type="button"
+                    | ✎
+              - else
+                / Pas de conducteur
+                button.w-full.text-xs.text-gray-500.hover:text-blue-600.border.border-dashed.border-gray-300.hover:border-blue-400.rounded.px-2.py-1.transition-colors data-action="click->modal#open" data-truck-id=truck.id data-date=@selected_date type="button"
+                  | + Assigner
 
             / Timeline du camion (7h à 18h = 11 heures = 11 * 60px)
             .flex-1.relative data-truck-timeline="true" data-truck-id=truck.id data-date=@selected_date style="min-width: 660px;"
@@ -65,12 +80,30 @@
                 - left_offset = ((start_hour - 7) * 60) + (start_minute * 60 / 60.0)
                 - width = duration_minutes * 60 / 60.0
 
-                .absolute.bg-blue-400.border.border-blue-500.rounded.px-2.py-1.text-xs.text-white.cursor-move.group.shadow style="left: #{left_offset}px; width: #{width}px; top: 10px; height: 60px; overflow: hidden;" data-intervention-id=intervention.id data-chantier-id=intervention.chantier_id data-chantier-duration=intervention.chantier.duration
+                .absolute.bg-blue-400.border.border-blue-500.rounded.px-2.py-1.text-xs.text-white.cursor-move.group.shadow style="left: #{left_offset}px; width: #{width}px; top: 15px; height: 70px; overflow: hidden;" data-intervention-id=intervention.id data-chantier-id=intervention.chantier_id data-chantier-duration=intervention.chantier.duration
                   .font-medium.truncate = intervention.chantier.name
                   .text-xs.opacity-90
                     = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
                   button.absolute.top-1.right-1.text-white.hover:text-red-200.opacity-0.group-hover:opacity-100.transition-opacity data-delete-intervention=intervention.id type="button"
                     | ×
+
+  / Modal d'assignation
+  #assignment-modal.hidden.fixed.inset-0.flex.items-center.justify-center.z-50 class="bg-black/40"
+    .bg-white.rounded-lg.shadow-xl.p-6.w-96
+      h3.text-xl.font-bold.mb-4 Assigner un conducteur
+
+      = form_with model: [:admin, DailyAssignment.new], local: true, id: "assignment-form", class: "space-y-4" do |f|
+        = f.hidden_field :truck_id, id: "modal-truck-id"
+        = f.hidden_field :date, id: "modal-date"
+
+        .space-y-2
+          = f.label :user_id, "Conducteur", class: "block text-sm font-medium text-gray-700"
+          = f.select :user_id, @available_users.map { |u| [u.email, u.id] }, { include_blank: "Sélectionner un conducteur" }, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+
+        .flex.justify-end.gap-2
+          button.px-4.py-2.text-gray-700.bg-gray-200.rounded.hover:bg-gray-300 type="button" data-action="click->modal#close"
+            | Annuler
+          = f.submit "Assigner", class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
 
 / Styles additionnels
 css:

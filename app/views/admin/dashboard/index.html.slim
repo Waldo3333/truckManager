@@ -4,41 +4,55 @@
 
   / Bouton principal vers le planning
   .mb-8
-    = link_to admin_planning_path, class: "block bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg shadow-lg p-6 transition-all transform hover:scale-105" do
+    = link_to admin_planning_path, class: "block bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg shadow-lg p-6 transition-all transform hover:scale-102" do
       .flex.items-center.justify-between
         div
           .text-2xl.font-bold 📅 Planning des interventions
           .text-blue-100.mt-1 Gérer les interventions et les affectations de camions
+        .flex.gap-3.bg-white.p-4.rounded-2xl.text-black.items-center
+          .text-sm.uppercase
+            p Interventions
+            p aujourd'hui
+          .text-3xl.font-bold.mt-2 = @interventions_today
+
         .text-4xl →
 
   .grid.grid-cols-1.md:grid-cols-4.gap-6.mb-8
     / Card Chantiers
-    .bg-white.rounded-lg.shadow.p-6
-      .text-gray-500.text-sm.uppercase Chantiers
-      .text-3xl.font-bold.mt-2 = @chantiers_count
-      = link_to "Gérer", admin_chantiers_path, class: "text-blue-500 text-sm mt-2 inline-block"
+    .bg-blue-300.rounded-lg.shadow.p-6.flex.items-center.justify-between
+      .flex.flex-col
+        .text-gray-500.text-sm.uppercase Chantiers
+        .text-3xl.font-bold.mt-2 = @chantiers_count
+      .flex.items-center.gap-4
+        = link_to admin_chantiers_path do
+          i class="fa-regular fa-eye text-4xl hover:scale-120 transition-all transform"
+
+        = link_to new_admin_chantier_path  do
+          p.text-6xl class="hover:scale-120 transition-all transform" ➕
 
     / Card Camions
-    .bg-white.rounded-lg.shadow.p-6
-      .text-gray-500.text-sm.uppercase Camions
-      .text-3xl.font-bold.mt-2 = @trucks_count
-      = link_to "Gérer", admin_trucks_path, class: "text-blue-500 text-sm mt-2 inline-block"
+    = link_to admin_trucks_path do
+      .bg-white.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between
+        .flex.flex-col
+          .text-gray-500.text-sm.uppercase Camions
+          .text-3xl.font-bold.mt-2 = @trucks_count
+        .flex
+          i class="fa-regular fa-pen-to-square text-4xl"
+
 
     / Card Salariés
-    .bg-white.rounded-lg.shadow.p-6
-      .text-gray-500.text-sm.uppercase Salariés
-      .text-3xl.font-bold.mt-2 = @users_count
-      = link_to "Gérer", admin_users_path, class: "text-blue-500 text-sm mt-2 inline-block"
+    = link_to admin_users_path do
+      .bg-white.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between
+        .flex.flex-col
+          .text-gray-500.text-sm.uppercase Salariés
+          .text-3xl.font-bold.mt-2 = @users_count
+        .flex
+          i class="fa-regular fa-pen-to-square text-4xl"
 
     / Card Interventions aujourd'hui
-    .bg-white.rounded-lg.shadow.p-6
-      .text-gray-500.text-sm.uppercase Interventions aujourd'hui
-      .text-3xl.font-bold.mt-2 = @interventions_today
-      = link_to "Planning", admin_planning_path, class: "text-blue-500 text-sm mt-2 inline-block"
-
-  .bg-white.rounded-lg.shadow.p-6
-    h2.text-xl.font-bold.mb-4 Actions rapides
-    .space-y-2
-      = link_to "➕ Nouveau chantier", new_admin_chantier_path, class: "block text-blue-500 hover:underline"
-      = link_to "🚛 Nouveau camion", new_admin_truck_path, class: "block text-blue-500 hover:underline"
-      = link_to "👤 Assigner un conducteur", new_admin_daily_assignment_path, class: "block text-blue-500 hover:underline"
+    = link_to admin_planning_path do
+      .bg-white.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between
+        .flex.flex-col
+          p Materiel
+        .flex
+          i class="fa-regular fa-pen-to-square text-4xl"

@@ -11,5 +11,13 @@ class Admin::PlanningController < ApplicationController
     planned_chantier_ids = Intervention.where(date: @selected_date).pluck(:chantier_id)
     @chantiers = Chantier.where.not(id: planned_chantier_ids)
                          .where("scheduled_date = ? OR scheduled_date IS NULL", @selected_date)
+
+    # Chargement des assignations du jour
+    @daily_assignments = DailyAssignment.where(date: @selected_date)
+                                        .includes(:user, :truck)
+                                        .index_by(&:truck_id)
+
+    # Users disponibles (salariés uniquement)
+    @available_users = User.where(admin: false).order(:email)
   end
 end
