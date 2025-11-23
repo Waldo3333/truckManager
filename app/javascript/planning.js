@@ -1,4 +1,3 @@
-// app/javascript/planning.js
 document.addEventListener("turbo:load", function () {
 	console.log("🚀 Planning JS chargé");
 
