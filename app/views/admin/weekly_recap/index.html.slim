@@ -1,0 +1,103 @@
+/ app/views/admin/weekly_recap/index.html.slim
+.div class="w-[100vw] pb-8"
+  .flex.justify-center.border-b.pt-2
+    h1.text-3xl.text-center.font-bold.mb-6 Vue Hebdomadaire - Récapitulatif
+
+  / Navigations
+  .flex.flex-col.md:flex-row.justify-around class="w-[100%]"
+    / Navigation Semaine
+    .bg-white.rounded-lg.shadow.p-4.mb-4
+      .flex.items-center.justify-between.gap-4
+        = link_to admin_weekly_recap_path(week: @selected_week - 1.week, truck_id: @selected_truck_id), class: "px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded flex items-center gap-2" do
+          i.fas.fa-chevron-left
+          span Semaine
+
+        .text-center
+          .text-lg.font-bold = "Semaine #{@selected_week.cweek}"
+          .text-sm.text-gray-600 = "#{@week_days.first.strftime('%d %b')} - #{@week_days.last.strftime('%d %b %Y')}"
+
+        = link_to admin_weekly_recap_path(week: @selected_week + 1.week, truck_id: @selected_truck_id), class: "px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded flex items-center gap-2" do
+          span Semaine
+          i.fas.fa-chevron-right
+
+    / Navigation Camion
+    - if @current_truck
+      .bg-white.rounded-lg.shadow.p-4.mb-6
+        .flex.items-center.justify-between.gap-4
+          - prev_truck = @trucks.where("id < ?", @current_truck.id).last || @trucks.last
+          = link_to admin_weekly_recap_path(week: @selected_week, truck_id: prev_truck.id), class: "px-4 py-2 bg-blue-200 hover:bg-blue-300 rounded flex items-center gap-2" do
+            i.fas.fa-chevron-left
+            span Camion précédent
+
+          .text-center
+            .text-xl.font-bold = @current_truck.name
+            - if @assignments[@selected_week]
+              .text-sm.text-gray-600
+                i.fas.fa-user.mr-1
+                = @assignments[@selected_week].user.email.split('@').first
+
+          - next_truck = @trucks.where("id > ?", @current_truck.id).first || @trucks.first
+          = link_to admin_weekly_recap_path(week: @selected_week, truck_id: next_truck.id), class: "px-4 py-2 bg-blue-200 hover:bg-blue-300 rounded flex items-center gap-2" do
+            span Camion suivant
+            i.fas.fa-chevron-right
+  /container planning + stats
+  .flex.flex-col.md:flex-row
+    / Timeline de la semaine
+    .bg-white.rounded-lg.shadow.p-4.mb-6 class="w-[80vw]"
+      / En-tête des heures
+      .flex.mb-2
+        .w-32.flex-shrink-0.text-sm.font-medium.text-gray-600
+          | Jour
+        .flex-1.flex
+          - (7..18).each do |hour|
+            .flex-1.text-center.text-xs.font-medium.text-gray-600.border-l.border-gray-200 style="min-width: 50px;"
+              = "#{hour}h"
+
+      / Lignes des jours
+      - @week_days.each do |day|
+        - interventions = @interventions_by_day[day] || []
+        - assignment = @assignments[day]
+
+        .flex.border-t.border-gray-200.relative style="height: 80px;"
+          / Colonne jour + conducteur
+          .w-32.flex-shrink-0.flex.flex-col.justify-center.px-3.bg-gray-50.border-r.border-gray-200
+            .font-medium.text-sm = day.strftime('%a %d')
+            - if assignment
+              .text-xs.text-gray-600.mt-1
+                i.fas.fa-user.mr-1
+                = assignment.user.email.split('@').first
+            - else
+              .text-xs.text-red-500.mt-1 Pas de conducteur
+
+          / Timeline du jour
+          .flex-1.relative style="min-width: 550px; background: repeating-linear-gradient(to right, transparent, transparent 49px, #e5e7eb 49px, #e5e7eb 50px);"
+            - if interventions.any?
+              - interventions.each do |intervention|
+                - start_hour = intervention.start_time.hour
+                - start_minute = intervention.start_time.min
+                - duration_minutes = intervention.duration_in_minutes
+
+                - left_offset = ((start_hour - 7) * 50) + (start_minute * 50 / 60.0)
+                - width = duration_minutes * 50 / 60.0
+
+                .absolute.rounded.px-2.py-1.text-xs.text-white.shadow class=(intervention.chantier.two_operators ? "bg-orange-400 border border-orange-500" : "bg-blue-400 border border-blue-500") style="left: #{left_offset}px; width: #{width}px; top: 10px; height: 60px; overflow: hidden;"
+                  .font-medium.truncate = intervention.chantier.name
+                  .text-xs.opacity-90
+                    = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
+            - else
+              .absolute.inset-0.flex.items-center.justify-center
+                .text-gray-400.text-sm.italic LIBRE
+
+    / Stats de la semaine
+    .bg-white.shadow.p-6.border-l class="md:w-[20vw]"
+      h2.text-xl.font-bold.mb-4 Statistiques de la semaine
+      .flex.flex-row.md:flex-col.justify-around
+        div
+          .text-gray-500.text-sm Interventions
+          .text-2xl.font-bold = @week_stats[:interventions]
+        div
+          .text-gray-500.text-sm Heures planifiées
+          .text-2xl.font-bold = "#{@week_stats[:hours]}h"
+        div
+          .text-gray-500.text-sm Jours libres
+          .text-2xl.font-bold = @week_stats[:free_days]

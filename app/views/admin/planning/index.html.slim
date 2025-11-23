@@ -1,5 +1,5 @@
 / app/views/admin/planning/index.html.slim
-.container-fluid.px-4.py-8 data-controller="modal"
+.container-fluid.px-4.py-8 data-controller="modal info-card"
   h1.text-3xl.font-bold.mb-6 Planning des interventions
 
   / Sélecteur de date
@@ -65,7 +65,7 @@
                 button.w-full.text-xs.text-gray-500.hover:text-blue-600.border.border-dashed.border-gray-300.hover:border-blue-400.rounded.px-2.py-1.transition-colors data-action="click->modal#open" data-truck-id=truck.id data-date=@selected_date type="button"
                   | + Assigner
 
-            / Timeline du camion (7h à 18h = 11 heures = 11 * 60px)
+            / Timeline des cards camions
             .flex-1.relative data-truck-timeline="true" data-truck-id=truck.id data-date=@selected_date style="min-width: 660px;"
               / Grille des heures (lignes verticales)
               - (7..18).each_with_index do |hour, index|
@@ -80,12 +80,17 @@
                 - left_offset = ((start_hour - 7) * 60) + (start_minute * 60 / 60.0)
                 - width = duration_minutes * 60 / 60.0
 
-                .absolute.bg-blue-400.border.border-blue-500.rounded.px-2.py-1.text-xs.text-white.cursor-move.group.shadow style="left: #{left_offset}px; width: #{width}px; top: 15px; height: 70px; overflow: hidden;" data-intervention-id=intervention.id data-chantier-id=intervention.chantier_id data-chantier-duration=intervention.chantier.duration
-                  .font-medium.truncate = intervention.chantier.name
+                .absolute.rounded.px-2.py-1.text-xs.text-white.cursor-move.group.shadow   class=(intervention.chantier.two_operators ? "bg-orange-400 border border-orange-500" : "bg-blue-400 border border-blue-500") style="left: #{left_offset}px; width: #{width}px; top: 15px; height: 70px; overflow: hidden;"  data-intervention-id=intervention.id data-chantier-id=intervention.chantier_id data-chantier-duration=intervention.chantier.duration data-action="mousedown->info-card#startClick click->info-card#open"
+                  .flex.gap-1
+                    .font-medium.truncate = intervention.chantier.name
+                    .text-xs.opacity-90 = intervention.chantier.extra_equipment ? "⚠️" : ""
                   .text-xs.opacity-90
                     = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
+                  .text-xs.opacity-90
+                    = "#{intervention.chantier.description.to_s.first(20)}"
                   button.absolute.top-1.right-1.text-white.hover:text-red-200.opacity-0.group-hover:opacity-100.transition-opacity data-delete-intervention=intervention.id type="button"
                     | ×
+  = render 'admin/chantiers/info_modal'
 
   / Modal d'assignation
   #assignment-modal.hidden.fixed.inset-0.flex.items-center.justify-center.z-50 class="bg-black/40"
@@ -104,6 +109,7 @@
           button.px-4.py-2.text-gray-700.bg-gray-200.rounded.hover:bg-gray-300 type="button" data-action="click->modal#close"
             | Annuler
           = f.submit "Assigner", class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+
 
 / Styles additionnels
 css:

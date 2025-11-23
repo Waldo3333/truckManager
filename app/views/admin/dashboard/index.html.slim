@@ -1,5 +1,5 @@
 / app/views/admin/dashboard/index.html.slim
-.container.mx-auto.px-4.py-8
+.px-30.py-8 class="w-[100vw]"
   h1.text-3xl.font-bold.mb-8 Dashboard Admin
 
   / Bouton principal vers le planning
@@ -17,42 +17,60 @@
 
         .text-4xl →
 
-  .grid.grid-cols-1.md:grid-cols-4.gap-6.mb-8
-    / Card Chantiers
-    .bg-blue-300.rounded-lg.shadow.p-6.flex.items-center.justify-between
+
+
+  .flex.gap-6.justify-between.mb-8 class="w-[100%]"
+    / Demain
+    .bg-blue-300.rounded-lg.shadow.p-6.flex.items-center.justify-between class="w-[20vw] h-[20vh]"
       .flex.flex-col
-        .text-gray-500.text-sm.uppercase Chantiers
-        .text-3xl.font-bold.mt-2 = @chantiers_count
-      .flex.items-center.gap-4
+        .text-gray-500.text-sm.uppercase Demain
+        .text-3xl.font-bold.mt-2 = "#{@interventions_tomorrow}"
+        .text-gray-500.text-sm.uppercase.mt-2 intervention#{@interventions_tomorrow > 1 ? 's' : ''}
+    / Planning semaine
+    = link_to admin_weekly_recap_path do
+      .bg-blue-300.rounded-lg.shadow.p-6.flex class="grow h-[20vh]"
+        .flex.items-center.w-100.justify-around.gap-3.w-max
+          .flex.flex-col.items-center
+            .text-gray-500.text-sm.uppercase Récap. Semaine
+            .text-gray-500.text-sm.uppercase 📅
+            .text-gray-500.text-sm.uppercase #{@week_start.strftime('%d/%m')} - #{@week_end.strftime('%d/%m')}
+          .text-4xl →
+          .flex.justify-between.gap-3
+            - @trucks.each do |truck|
+              - count = truck.interventions.where(date: @week_start..@week_end).count
+              .rounded-lg.p-4.bg-amber-100
+                .flex.items-center.flex-col
+                  div
+                    .text-sm.font-bold.mt-1 class=(count > 0 ? "text-green-900" : "text-gray-400") = count
+                  i.fas.fa-truck.text-xs class=(count > 0 ? "text-green-900" : "text-gray-400")
+  .flex.gap-6.mb-8.justify-between class="w-[100%]"
+    / Card Chantiers
+    .bg-sky-900.rounded-lg.shadow.p-6.flex.items-center.justify-between class="w-[40vw] h-[20vh]"
+      .flex.flex-col
+        .text-white.text-sm.uppercase Chantiers
+        .text-3xl.text-white.font-bold.mt-2 = @chantiers_count
+      .flex.items-center.flex-col.py-6
         = link_to admin_chantiers_path do
-          i class="fa-regular fa-eye text-4xl hover:scale-120 transition-all transform"
+          i class="fa-regular fa-eye text-4xl hover:scale-120 transition-all transform  text-white"
 
         = link_to new_admin_chantier_path  do
-          p.text-6xl class="hover:scale-120 transition-all transform" ➕
+          p.text-6xl class="hover:scale-120 transition-all transform text-white" +
 
     / Card Camions
     = link_to admin_trucks_path do
-      .bg-white.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between
+      .bg-sky-900.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between class="w-[20vw] h-[20vh]"
         .flex.flex-col
-          .text-gray-500.text-sm.uppercase Camions
-          .text-3xl.font-bold.mt-2 = @trucks_count
+          .text-white.text-sm.uppercase Camions
+          .text-white.text-3xl.font-bold.mt-2 = @trucks_count
         .flex
-          i class="fa-regular fa-pen-to-square text-4xl"
+          i class="fa-regular fa-pen-to-square text-4xl text-white"
 
 
     / Card Salariés
     = link_to admin_users_path do
-      .bg-white.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between
+      .bg-sky-900.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between class="w-[20vw] h-[20vh]"
         .flex.flex-col
-          .text-gray-500.text-sm.uppercase Salariés
-          .text-3xl.font-bold.mt-2 = @users_count
+          .text-white.text-sm.uppercase Personnel
+          .text-white.text-3xl.font-bold.mt-2 = @users_count
         .flex
-          i class="fa-regular fa-pen-to-square text-4xl"
-
-    / Card Interventions aujourd'hui
-    = link_to admin_planning_path do
-      .bg-white.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between
-        .flex.flex-col
-          p Materiel
-        .flex
-          i class="fa-regular fa-pen-to-square text-4xl"
+          i class="fa-regular fa-pen-to-square text-4xl text-white"

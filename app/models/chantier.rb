@@ -4,6 +4,8 @@ class Chantier < ApplicationRecord
   validates :name, presence: true
   validates :location, presence: true
   validates :duration, presence: true, numericality: { greater_than: 0 }
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }
+  validates :phone, format: { with: /\A[\d\s\-\+\(\)]+\z/, allow_blank: true }
 
   scope :scheduled_for, ->(date) { where(scheduled_date: date) }
   scope :unscheduled, -> { where(scheduled_date: nil) }

@@ -1,0 +1,73 @@
+/ app/views/admin/chantiers/_info.html.slim
+.space-y-4 class="max-h-[90vh]"
+  / En-tête
+  .border-b.pb-4
+    .flex.justify-between
+      h3.text-2xl.font-bold.text-gray-800 = chantier.name
+      button.text-gray-400.hover:text-gray-600.text-2xl.z-10 data-action="click->info-card#close" type="button"
+          | ×
+    .flex.items-center.gap-2.mt-2
+      i.fas.fa-map-marker-alt.text-gray-500
+      span.text-gray-600 = chantier.location
+
+  / Informations principales
+  .grid.grid-cols-2.gap-4
+    / Durée
+    div
+      .text-xs.text-gray-500.uppercase.mb-1 Durée estimée
+      .flex.items-center.gap-2
+        i.fas.fa-clock.text-blue-500
+        span.text-lg.font-semibold = "#{chantier.duration} min (#{chantier.duration_in_hours}h)"
+
+    / Date prévue
+    div
+      .text-xs.text-gray-500.uppercase.mb-1 Date prévue
+      - if chantier.scheduled_date.present?
+        .flex.items-center.gap-2
+          i.fas.fa-calendar.text-green-500
+          span.text-lg.font-semibold = chantier.scheduled_date.strftime('%d/%m/%Y')
+      - else
+        span.text-gray-400.italic Aucune date
+
+  / Contact
+  - if chantier.email.present? || chantier.phone.present?
+    .bg-gray-50.rounded-lg.p-4
+      .text-sm.font-semibold.text-gray-700.mb-2 Contact
+
+      - if chantier.email.present?
+        .flex.items-center.gap-2.mb-2
+          i.fas.fa-envelope.text-gray-500
+          a.text-blue-600.hover:underline href="mailto:#{chantier.email}" = chantier.email
+
+      - if chantier.phone.present?
+        .flex.items-center.gap-2
+          i.fas.fa-phone.text-gray-500
+          a.text-blue-600.hover:underline href="tel:#{chantier.phone}" = chantier.phone
+
+  / Description
+  - if chantier.description.present?
+    div class="max-h-[30vh] overflow-scroll"
+      .text-sm.font-semibold.text-gray-700.mb-2 Description
+      .text-gray-600.text-sm.whitespace-pre-wrap = chantier.description
+
+  / Badges spéciaux
+  .flex.gap-2.flex-wrap
+    - if chantier.two_operators
+      .inline-flex.items-center.gap-2.bg-orange-100.text-orange-800.px-3.py-1.rounded-full.text-sm
+        i.fas.fa-users
+        span Deux opérateurs requis
+
+    - if chantier.extra_equipment
+      .inline-flex.items-center.gap-2.bg-yellow-100.text-yellow-800.px-3.py-1.rounded-full.text-sm
+        i.fas.fa-tools
+        span Matériel supplémentaire
+
+  / Actions
+  .border-t.pt-4.flex.justify-end.gap-2
+    = link_to edit_admin_chantier_path(chantier), class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 inline-flex items-center gap-2" do
+      i.fas.fa-edit
+      span Modifier
+
+    = button_to admin_chantier_path(chantier), method: :delete, data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer ce chantier ?" }, class: "px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 inline-flex items-center gap-2" do
+      i.fas.fa-trash
+      span Supprimer

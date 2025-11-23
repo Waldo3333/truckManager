@@ -1,10 +1,15 @@
 # app/controllers/admin/chantiers_controller.rb
 class Admin::ChantiersController < ApplicationController
   before_action :require_admin
-  before_action :set_chantier, only: [:edit, :update, :destroy]
+  before_action :set_chantier, only: [:edit, :show, :update, :destroy]
 
   def index
     @chantiers = Chantier.all.order(created_at: :desc)
+  end
+
+  def show
+    # Render juste la partial pour AJAX
+    render partial: 'admin/chantiers/info', locals: { chantier: @chantier }, layout: false
   end
 
   def new
@@ -44,6 +49,6 @@ class Admin::ChantiersController < ApplicationController
   end
 
   def chantier_params
-    params.require(:chantier).permit(:name, :location, :duration, :scheduled_date)
+    params.require(:chantier).permit(:name, :location, :duration, :scheduled_date, :email, :phone, :description, :extra_equipment, :two_operators)
   end
 end
