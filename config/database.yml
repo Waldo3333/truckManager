@@ -79,6 +79,4 @@ test:
 #
 production:
   <<: *default
-  database: truck_calendar_production
-  username: truck_calendar
-  password: <%= ENV["TRUCK_CALENDAR_DATABASE_PASSWORD"] %>
+  url: <%= ENV['DATABASE_URL'] %>
