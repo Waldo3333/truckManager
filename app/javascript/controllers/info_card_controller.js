@@ -7,17 +7,14 @@ export default class extends Controller {
 		this.clickStartTime = null;
 	}
 
-	// Enregistrer le moment où on commence à cliquer
 	startClick(event) {
 		this.clickStartTime = Date.now();
 	}
 
 	open(event) {
-		// Calculer la durée du clic
 		const clickDuration = Date.now() - this.clickStartTime;
 		console.log("⏱️ Durée du clic:", clickDuration, "ms");
 
-		// Si le clic a duré plus de 100ms, c'est un drag, on ignore
 		if (clickDuration > 100) {
 			console.log("🚫 Clic trop long (drag détecté), modal non ouverte");
 			this.clickStartTime = null;
@@ -54,7 +51,13 @@ export default class extends Controller {
 			modal.classList.remove("opacity-0", "pointer-events-none");
 			modal.classList.add("opacity-100", "pointer-events-auto");
 
-			const response = await fetch(`/admin/chantiers/${chantierId}`, {
+			// Détecter si on est admin ou employé basé sur l'URL
+			const isEmployee = window.location.pathname.startsWith("/employee");
+			const url = isEmployee
+				? `/employee/chantiers/${chantierId}`
+				: `/admin/chantiers/${chantierId}`;
+
+			const response = await fetch(url, {
 				headers: {
 					Accept: "text/html",
 					"X-Requested-With": "XMLHttpRequest",

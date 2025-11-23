@@ -1,0 +1,136 @@
+/ app/views/employee/schedule/index.html.slim
+.min-h-screen.bg-gray-100 class="w-[100vw]" data-controller="employee-schedule info-card"
+  / Header Navigation
+  .bg-white.shadow-md.sticky.top-0.z-99
+    .w-full.max-w-7xl.mx-auto.px-4.py-4
+      / Navigation de date
+      .flex.items-center.justify-between.mb-4
+        = link_to employee_schedule_path(date: @selected_date - 1.day, compare_user_id: params[:compare_user_id]), class: "p-2 hover:bg-gray-100 rounded-full transition-colors" do
+          i.fas.fa-chevron-left.text-xl
+
+        .text-center
+          .text-2xl.font-bold = l(@selected_date, format: '%A %d')
+          .text-sm.text-gray-600 = l(@selected_date, format: '%B %Y')
+
+        = link_to employee_schedule_path(date: @selected_date + 1.day, compare_user_id: params[:compare_user_id]), class: "p-2 hover:bg-gray-100 rounded-full transition-colors" do
+          i.fas.fa-chevron-right.text-xl
+
+      / Boutons actions
+      .flex.gap-2.justify-center
+        button.flex-1.px-4.py-2.bg-blue-500.text-white.rounded-lg.hover:bg-blue-600.transition-colors.flex.items-center.justify-center.gap-2 data-action="click->employee-schedule#toggleCalendar" type="button"
+          i.fas.fa-calendar
+          span Semaine
+
+        button.flex-1.px-4.py-2.bg-purple-500.text-white.rounded-lg.hover:bg-purple-600.transition-colors.flex.items-center.justify-center.gap-2 data-action="click->employee-schedule#toggleColleaguesList" type="button"
+          i.fas.fa-users
+          - if params[:compare_user_id].present? && @compare_user
+            span = @compare_user.email.split('@').first.capitalize
+          - else
+            span Collègues
+
+  / Contenu principal
+  .w-full.max-w-7xl.mx-auto.px-2.sm:px-4.lg:px-6.py-6
+    .bg-white.rounded-lg.shadow-lg.p-2.sm:p-4
+      / Info camion(s)
+      - if params[:compare_user_id].blank?
+        / Mode solo
+        - if @my_assignment
+          .bg-blue-50.border.border-blue-200.rounded-lg.p-4.mb-4
+            .flex.items-center.gap-3
+              i.fas.fa-truck.text-3xl.text-blue-600
+              div
+                .text-xl.font-bold = @my_assignment.truck.name
+                .text-sm.text-gray-600 = @user.email.split('@').first.capitalize
+        - else
+          .bg-gray-100.rounded-lg.p-8.text-center
+            p.text-sm.text-gray-500 Jour de repos ou pas de camion aloué
+      - else
+        / Mode comparaison - Info des 2 camions
+        .grid.grid-cols-2.gap-4.mb-4
+          .bg-blue-50.border.border-blue-200.rounded-lg.p-3
+            .flex.items-center.gap-2
+              i.fas.fa-truck.text-xl.text-blue-600
+              div
+                .text-sm.font-bold Moi
+                - if @my_assignment
+                  .text-xs.text-gray-600 = @my_assignment.truck.name
+                - else
+                  .text-xs.text-gray-500 Repos
+
+          .bg-green-50.border.border-green-200.rounded-lg.p-3
+            .flex.items-center.gap-2
+              i.fas.fa-truck.text-xl.text-green-600
+              div
+                .text-sm.font-bold = @compare_user.email.split('@').first.capitalize
+                - if @compare_assignment
+                  .text-xs.text-gray-600 = @compare_assignment.truck.name
+                - else
+                  .text-xs.text-gray-500 Repos
+
+      / Timeline (solo ou comparaison)
+      - if @my_interventions.any? || (params[:compare_user_id].present? && @compare_interventions&.any?)
+        .relative.mt-6
+          / Timeline avec ou sans comparaison
+          - if params[:compare_user_id].blank?
+            / Mode solo : timeline simple (comme avant)
+            = render 'timeline_solo', interventions: @my_interventions
+          - else
+            / Mode comparaison : timeline divisée
+            = render 'timeline_compare', my_interventions: @my_interventions, compare_interventions: @compare_interventions
+      - else
+        .text-center.py-16
+          i.fas.fa-coffee.text-6xl.text-gray-300.mb-4
+          p.text-xl.text-gray-500.font-medium Journée libre
+          p.text-sm.text-gray-400 Aucune intervention prévue
+
+  / Modal Liste des collègues
+  .fixed.inset-0.bg-opacity-50.flex.items-center.justify-center.z-50.hidden class="bg-black/40" data-employee-schedule-target="colleaguesList" data-action="click->employee-schedule#closeColleaguesList"
+    .bg-white.rounded-lg.shadow-xl.p-6.max-w-md.w-full.mx-4 data-action="click->event#stopPropagation:stop"
+      .flex.items-center.justify-between.mb-4
+        h3.text-xl.font-bold Choisir un collègue
+        button.text-gray-500.hover:text-gray-700 data-action="click->employee-schedule#closeColleaguesList" type="button"
+          i.fas.fa-times.text-2xl
+
+      / Liste des collègues
+      .space-y-2.max-h-96.overflow-y-auto
+        - if params[:compare_user_id].present?
+          / Option pour retourner en mode solo
+          = link_to employee_schedule_path(date: @selected_date), class: "block p-4 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            .flex.items-center.justify-between
+              .flex.items-center.gap-3
+                .w-10.h-10.bg-gray-100.rounded-full.flex.items-center.justify-center
+                  i.fas.fa-times.text-gray-600
+                div
+                  .font-medium Mon planning seul
+                  .text-xs.text-gray-500 Fermer la comparaison
+              i.fas.fa-chevron-right.text-gray-400
+
+        - @colleagues.each do |colleague|
+          - assignment = DailyAssignment.find_by(user: colleague, date: @selected_date)
+          - is_selected = params[:compare_user_id].to_i == colleague.id
+
+          = link_to employee_schedule_path(date: @selected_date, compare_user_id: colleague.id), class: "block p-4 border-2 rounded-lg hover:bg-gray-50 transition-colors #{is_selected ? 'border-purple-500 bg-purple-50' : 'border-gray-200'}"
+            .flex.items-center.justify-between
+              .flex.items-center.gap-3
+                .w-10.h-10.bg-purple-100.rounded-full.flex.items-center.justify-center
+                  i.fas.fa-user.text-purple-600
+                div
+                  .font-medium = colleague.email.split('@').first.capitalize
+                  .text-xs.text-gray-500
+                    - if assignment
+                      i.fas.fa-truck.mr-1
+                      = assignment.truck.name
+                    - else
+                      i.fas.fa-calendar-times.mr-1
+                      | Repos
+              i.fas.fa-chevron-right.text-gray-400
+
+  / Modal Calendrier (slide depuis le bas)
+  .fixed.inset-x-0.bottom-0.bg-white.rounded-t-3xl.shadow-2xl.transform.transition-transform.duration-300.translate-y-full.z-50 data-employee-schedule-target="calendar"
+    .p-6 data-employee-schedule-target="calendarContent"
+      / Le contenu sera chargé dynamiquement ici
+      .text-center.py-8
+        i.fas.fa-spinner.fa-spin.text-3xl.text-blue-500
+
+/ Modal d'info chantier
+= render 'admin/chantiers/info_modal'

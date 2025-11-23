@@ -17,39 +17,35 @@
 
   <body class="bg-gray-100">
     <%# Navbar Employé %>
+    <%# app/views/layouts/employee.html.erb %>
     <nav class="bg-blue-600 text-white shadow-lg">
-      <div class="container mx-auto px-4">
+      <div class="w-full px-4">
         <div class="flex items-center justify-between h-16">
-          <div class="flex items-center gap-8">
-            <h1 class="text-xl font-bold">
-              <i class="fas fa-truck mr-2"></i>
-              TruckCalendar
+          <div class="flex items-center gap-2 sm:gap-8">
+            <h1 class="text-lg sm:text-xl font-bold">
+              <i class="fas fa-truck mr-1 sm:mr-2"></i>
+              <span class="hidden sm:inline">TruckCalendar</span>
             </h1>
 
-            <%= link_to employee_dashboard_path, class: "hover:bg-blue-700 px-3 py-2 rounded transition-colors" do %>
-              <i class="fas fa-home mr-1"></i>
-              Accueil
-            <% end %>
+            <%# Navigation cachée sur mobile, visible sur desktop %>
+            <div class="md:flex items-center gap-4">
 
-            <%= link_to employee_my_schedule_path, class: "hover:bg-blue-700 px-3 py-2 rounded transition-colors" do %>
-              <i class="fas fa-calendar-week mr-1"></i>
-              Mon Planning
-            <% end %>
+              <%= link_to employee_schedule_path, class: "hover:bg-blue-700 px-3 py-2 rounded transition-colors" do %>
+                <i class="fas fa-calendar-week mr-1"></i>
+                Aujourd'hui
+              <% end %>
+            </div>
 
-            <%= link_to employee_team_schedule_path, class: "hover:bg-blue-700 px-3 py-2 rounded transition-colors" do %>
-              <i class="fas fa-users mr-1"></i>
-              Planning Équipe
-            <% end %>
           </div>
 
-          <div class="flex items-center gap-4">
-            <span class="text-sm">
+          <div class="flex items-center gap-2 sm:gap-4">
+            <span class="text-xs sm:text-sm sm:inline">
               <i class="fas fa-user-circle mr-1"></i>
               <%= current_user.email.split('@').first.capitalize %>
             </span>
-            <%= button_to destroy_user_session_path, method: :delete, class: "bg-red-500 hover:bg-red-600 px-3 py-2 rounded transition-colors text-sm" do %>
-              <i class="fas fa-sign-out-alt mr-1"></i>
-              Déconnexion
+            <%= button_to destroy_user_session_path, method: :delete, class: "bg-red-500 hover:bg-red-600 p-2 sm:px-3 sm:py-2 rounded transition-colors text-sm" do %>
+              <i class="fas fa-sign-out-alt"></i>
+              <span class="hidden sm:inline ml-1">Déconnexion</span>
             <% end %>
           </div>
         </div>

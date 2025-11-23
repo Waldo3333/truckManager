@@ -4,3 +4,6 @@ import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading";
 eagerLoadControllersFrom("controllers", application);
 import ModalController from "./modal_controller";
 application.register("modal", ModalController);
+// app/javascript/controllers/index.js
+import EmployeeScheduleController from "./employee_schedule_controller";
+application.register("employee-schedule", EmployeeScheduleController);

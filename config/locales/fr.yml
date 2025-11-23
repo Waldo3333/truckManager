@@ -1,0 +1,56 @@
+# config/locales/fr.yml
+fr:
+  date:
+    abbr_day_names:
+      - Dim
+      - Lun
+      - Mar
+      - Mer
+      - Jeu
+      - Ven
+      - Sam
+    day_names:
+      - Dimanche
+      - Lundi
+      - Mardi
+      - Mercredi
+      - Jeudi
+      - Vendredi
+      - Samedi
+    abbr_month_names:
+      - ~
+      - Jan
+      - Fév
+      - Mar
+      - Avr
+      - Mai
+      - jun
+      - jui
+      - Aoû
+      - Sep
+      - Oct
+      - Nov
+      - Déc
+    month_names:
+      - ~
+      - Janvier
+      - Février
+      - Mars
+      - Avril
+      - Mai
+      - Juin
+      - Juillet
+      - Août
+      - Septembre
+      - Octobre
+      - Novembre
+      - Décembre
+    formats:
+      default: "%d/%m/%Y"
+      short: "%e %b"
+      long: "%e %B %Y"
+  time:
+    formats:
+      default: "%d %B %Y %H:%M"
+      short: "%d %b %H:%M"
+      long: "%A %d %B %Y %H:%M:%S"

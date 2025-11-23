@@ -21,9 +21,10 @@ Rails.application.routes.draw do
 
   # ROUTES EMPLOYÉS
   namespace :employee do
-    root to: "dashboard#index"
-    get 'dashboard', to: 'dashboard#index'
-    get 'my_schedule', to: 'my_schedule#index'
-    get 'team_schedule', to: 'team_schedule#index'
+    root to: "schedule#index"
+    get 'schedule', to: 'schedule#index'
+    get 'schedule/calendar', to: 'schedule#calendar', as: 'schedule_calendar'
+    get 'chantiers/:id', to: 'chantiers#show', as: 'chantier'
+
   end
 end

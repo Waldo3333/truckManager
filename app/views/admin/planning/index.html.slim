@@ -7,8 +7,7 @@
     = form_with url: admin_planning_path, method: :get, local: true, class: "flex gap-4 items-center", data: { turbo: false } do |f|
       label.text-sm.font-medium.text-gray-700 Date
       = f.date_field :date, value: @selected_date, class: "px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", onchange: "this.form.submit()"
-      span.text-gray-500 = @selected_date.strftime("%A %d %B %Y")
-
+      span.text-gray-500 = l(@selected_date, format: '%A %d %B %Y')
   / Layout : Sidebar + Timeline
   .flex.gap-6
     / Sidebar gauche : Chantiers à planifier
@@ -25,9 +24,19 @@
                 .text-xs.text-blue-600.mt-1
                   = "📏 #{chantier.duration} min (#{chantier.duration_in_hours}h)"
                 - if chantier.scheduled_date.present?
-                  .text-xs.text-green-600.mt-1 = "📅 #{chantier.scheduled_date.strftime('%d/%m/%Y')}"
+                  .text-xs.text-green-600.mt-1 = "📅 #{l(chantier.scheduled_date, format: :long)}"
                 - else
                   .text-xs.text-gray-400.italic.mt-1 Aucune date prévue
+                .text-xs.text-gray-500
+
+                .flex.mt-2.items-center.gap-2
+                  - if chantier.extra_equipment || chantier.two_operators
+                    p.text-xs ⚠️
+                  - if chantier.extra_equipment
+                    i class="fa-solid fa-screwdriver-wrench text-xs text-black opacity-90"
+                  - if chantier.two_operators
+                    i class="fa-solid fa-people-arrows text-xs text-black"
+
         - else
           p.text-gray-500.text-sm.italic Aucun chantier disponible
 
@@ -83,7 +92,8 @@
                 .absolute.rounded.px-2.py-1.text-xs.text-white.cursor-move.group.shadow   class=(intervention.chantier.two_operators ? "bg-orange-400 border border-orange-500" : "bg-blue-400 border border-blue-500") style="left: #{left_offset}px; width: #{width}px; top: 15px; height: 70px; overflow: hidden;"  data-intervention-id=intervention.id data-chantier-id=intervention.chantier_id data-chantier-duration=intervention.chantier.duration data-action="mousedown->info-card#startClick click->info-card#open"
                   .flex.gap-1
                     .font-medium.truncate = intervention.chantier.name
-                    .text-xs.opacity-90 = intervention.chantier.extra_equipment ? "⚠️" : ""
+                    - if intervention.chantier.extra_equipment
+                      i class="fa-solid fa-screwdriver-wrench text-xs text-gray-300 opacity-90" ⚠️
                   .text-xs.opacity-90
                     = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
                   .text-xs.opacity-90

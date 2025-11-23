@@ -33,7 +33,7 @@
           .flex.flex-col.items-center
             .text-gray-500.text-sm.uppercase Récap. Semaine
             .text-gray-500.text-sm.uppercase 📅
-            .text-gray-500.text-sm.uppercase #{@week_start.strftime('%d/%m')} - #{@week_end.strftime('%d/%m')}
+            .text-gray-500.text-sm.uppercase = "#{l(@week_start, format: '%d/%m')} - #{l(@week_end, format: '%d/%m')}"
           .text-4xl →
           .flex.justify-between.gap-3
             - @trucks.each do |truck|

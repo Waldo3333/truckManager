@@ -1,0 +1,75 @@
+/ app/views/employee/schedule/_timeline_compare.html.slim
+
+/ Variables locales : my_interventions, compare_interventions
+
+.relative
+  / Grille des heures (structure de base)
+  - (7..18).each_with_index do |hour, index|
+    .flex.items-start.border-b.border-gray-100 style="height: 60px;"
+      / Heure (gauche)
+      .w-16.flex-shrink-0.text-right.pr-4.pt-2.border-r.border-gray-200
+        .text-sm.font-medium.text-gray-600 = "#{hour}:00"
+
+      / Colonne MOI (bleu) - Fond uniquement
+      .flex-1.bg-blue-50 style="min-width: 0;"
+
+      / Séparateur vertical
+      .w-0.5.bg-gray-300.flex-shrink-0
+
+      / Colonne COLLÈGUE (vert) - Fond uniquement
+      .flex-1.bg-green-50 style="min-width: 0;"
+
+  / Interventions MOI (positionnées en absolute)
+  - my_interventions.each do |intervention|
+    - start_hour = intervention.start_time.hour
+    - start_minute = intervention.start_time.min
+    - duration_minutes = intervention.duration_in_minutes
+
+    / Calcul position : depuis 7h00
+    - top_position = ((start_hour - 7) * 60) + (start_minute * 60 / 60.0)
+    - height = duration_minutes * 60 / 60.0
+
+    / left: après l'heure (16px) + marge
+    .absolute.rounded-lg.p-3.shadow-md.cursor-pointer.transition-all.hover:shadow-lg.bg-blue-400.border-2.border-blue-600 style="left: calc(4rem + 0.75rem); width: calc(50% - 2.5rem); top: #{top_position}px; height: #{height}px; min-height: 60px; z-index: 10;" data-action="mousedown->info-card#startClick click->info-card#open" data-chantier-id=intervention.chantier_id
+      .text-white.h-full.overflow-hidden
+        .flex
+          .font-bold.text-sm.mb-1.truncate = intervention.chantier.name
+          .flex.mt-2.items-center.gap-2
+          - if intervention.chantier.extra_equipment || intervention.chantier.two_operators
+            p.text-xs ⚠️
+          - if intervention.chantier.extra_equipment
+            i class="fa-solid fa-screwdriver-wrench text-xs text-black opacity-90"
+          - if intervention.chantier.two_operators
+            i class="fa-solid fa-people-arrows text-xs text-black"
+        .flex.items-center.gap-1.text-xs.mb-1.truncate
+          i.fas.fa-clock.flex-shrink-0
+          span.truncate = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
+        .text-xs.truncate
+          i.fas.fa-map-marker-alt.mr-1.flex-shrink-0
+          span.truncate = intervention.chantier.location
+
+
+  / Interventions COLLÈGUE (positionnées en absolute)
+  - compare_interventions.each do |intervention|
+    - start_hour = intervention.start_time.hour
+    - start_minute = intervention.start_time.min
+    - duration_minutes = intervention.duration_in_minutes
+
+    - top_position = ((start_hour - 7) * 60) + (start_minute * 60 / 60.0)
+    - height = duration_minutes * 60 / 60.0
+
+    / left: 50% (milieu de l'écran) + marge
+    .absolute.rounded-lg.p-3.shadow-md.cursor-pointer.transition-all.hover:shadow-lg.bg-green-700.border-2.border-green-600 style="right: 0; width: calc(50% - 2.5rem); top: #{top_position}px; height: #{height}px; min-height: 60px; z-index: 10;" data-action="mousedown->info-card#startClick click->info-card#open" data-chantier-id=intervention.chantier_id
+      .text-white.h-full.overflow-hidden
+        .flex
+          .font-bold.text-sm.mb-1.truncate = intervention.chantier.name
+          .flex.mt-2.items-center.gap-2
+          - if intervention.chantier.extra_equipment || intervention.chantier.two_operators
+            p.text-xs ⚠️
+          - if intervention.chantier.extra_equipment
+            i class="fa-solid fa-screwdriver-wrench text-xs text-black opacity-90"
+          - if intervention.chantier.two_operators
+            i class="fa-solid fa-people-arrows text-xs text-black"
+        .flex.items-center.gap-1.text-xs.mb-1.truncate
+          i.fas.fa-clock.flex-shrink-0
+          span.truncate = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"

@@ -1,0 +1,63 @@
+/ app/views/employee/schedule/_timeline.html.slim
+
+/ Variables locales attendues:
+/ - assignment: DailyAssignment ou nil
+/ - interventions: Array d'interventions
+/ - user: User
+
+- if assignment
+  / Info camion (version compacte pour split-screen)
+  .bg-blue-50.border.border-blue-200.rounded-lg.p-3.mb-4
+    .flex.items-center.gap-2
+      i.fas.fa-truck.text-xl.text-blue-600
+      .text-sm.font-bold = assignment.truck.name
+
+  / Timeline verticale
+  - if interventions.any?
+    .relative
+      / Ligne verticale
+      .absolute.left-12.top-0.bottom-0.w-0.5.bg-gray-200
+
+      / Heures et interventions
+      - (7..18).each do |hour|
+        .relative.flex.items-start.mb-1 style="min-height: 50px;"
+          / Heure
+          .w-12.flex-shrink-0.text-right.pr-3.pt-1
+            .text-xs.font-medium.text-gray-600 = "#{hour}h"
+
+          / Point sur la timeline
+          .absolute.left-12.w-2.h-2.bg-gray-300.rounded-full style="margin-left: -4px; margin-top: 4px;"
+
+          / Interventions pour cette heure
+          .flex-1.ml-6
+            - interventions.select { |i| i.start_time.hour == hour }.each do |intervention|
+              - duration_hours = intervention.duration_in_minutes / 60.0
+              - height = duration_hours * 50
+
+              .rounded-lg.p-3.shadow-md.mb-1.cursor-pointer.transition-all.hover:shadow-lg class=(intervention.chantier.two_operators ? "bg-orange-400 border border-orange-500" : "bg-blue-400 border border-blue-500") style="height: #{height}px; min-height: 60px;" data-action="mousedown->info-card#startClick click->info-card#open" data-chantier-id=intervention.chantier_id
+                .text-white
+                  .font-bold.text-sm.mb-1.truncate = intervention.chantier.name
+                  .flex.items-center.gap-1.text-xs.mb-1
+                    i.fas.fa-clock
+                    = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
+                  .text-xs.truncate
+                    i.fas.fa-map-marker-alt.mr-1
+                    = intervention.chantier.location
+
+                  - if intervention.chantier.two_operators || intervention.chantier.extra_equipment
+                    .flex.gap-1.mt-2
+                      - if intervention.chantier.two_operators
+                        i.fas.fa-users.text-xs
+                      - if intervention.chantier.extra_equipment
+                        i.fas.fa-tools.text-xs
+  - else
+    .text-center.py-8
+      i.fas.fa-coffee.text-4xl.text-gray-300.mb-2
+      p.text-sm.text-gray-500 Journée libre
+
+- else
+  / Pas d'assignation
+  .bg-gray-100.rounded-lg.p-6.text-center
+    i.fas.fa-calendar-times.text-3xl.text-gray-400.mb-3
+    p.text-gray-600.text-sm Pas de camion assigné
+    p.text-xs.text-gray-500 Repos ou pas planifié

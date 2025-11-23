@@ -1,0 +1,38 @@
+/ app/views/employee/schedule/_calendar_grid.html.slim
+
+/ En-tête avec navigation
+.flex.items-center.justify-between.mb-4
+  / Flèche mois précédent
+  button.p-2.hover:bg-gray-100.rounded-full.transition-colors data-action="click->employee-schedule#prevMonth" type="button"
+    i.fas.fa-chevron-left.text-gray-600
+
+  / Titre du mois
+  h3.text-xl.font-bold = l(selected_date, format: '%B %Y').capitalize
+
+  / Flèche mois suivant + Bouton fermer
+  .flex.items-center.gap-2
+    button.p-2.hover:bg-gray-100.rounded-full.transition-colors data-action="click->employee-schedule#nextMonth" type="button"
+      i.fas.fa-chevron-right.text-gray-600
+
+    button.text-gray-500.hover:text-gray-700.p-2 data-action="click->employee-schedule#closeCalendar" type="button"
+      i.fas.fa-times.text-2xl
+
+/ Grille calendrier
+.grid.grid-cols-7.gap-2
+  / Jours de la semaine
+  - %w[L M M J V S D].each do |day|
+    .text-center.text-sm.font-medium.text-gray-600.py-2 = day
+
+  / Calculer le premier jour à afficher
+  - calendar_start = month_start.beginning_of_week(:monday)
+  - calendar_end = month_end.end_of_week(:monday)
+
+  / Afficher tous les jours du calendrier
+  - (calendar_start..calendar_end).each do |day|
+    - is_current_month = day.month == selected_date.month
+    - is_today = day == Date.today
+    - is_selected = day == selected_date
+    - has_work = my_work_days.include?(day)
+
+    = link_to employee_schedule_path(date: day, compare_user_id: compare_user_id), class: "aspect-square flex items-center justify-center rounded-lg text-sm transition-colors #{is_today ? 'ring-2 ring-blue-500' : ''} #{is_selected ? 'bg-blue-500 text-white font-bold' : has_work && is_current_month ? 'bg-green-100 text-green-800 font-medium' : is_current_month ? 'text-gray-600 hover:bg-gray-100' : 'text-gray-300'}", data: { action: "click->employee-schedule#closeCalendar" } do
+      = day.day
