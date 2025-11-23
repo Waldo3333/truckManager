@@ -1,7 +1,8 @@
 pin "application", preload: true
 pin "@hotwired/turbo-rails", to: "turbo.min.js", preload: true
 pin "@hotwired/stimulus", to: "stimulus.min.js", preload: true
-pin "@hotwired/stimulus-loading", to: "stimulus-loading.js", preload: true
+# ENLÈVE CETTE LIGNE :
+# pin "@hotwired/stimulus-loading", to: "stimulus-loading.js", preload: true
 
 # Pin explicite de chaque controller
 pin "controllers/application", to: "controllers/application.js", preload: true

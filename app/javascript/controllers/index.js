@@ -1,12 +1,17 @@
 // app/javascript/controllers/index.js
-
-// Import and register all your controllers from the importmap via controllers/**/*_controller
 import { application } from "./application";
-import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading";
-eagerLoadControllersFrom("controllers", application);
+
+// Enregistrer manuellement chaque controller
+import HelloController from "./hello_controller";
+application.register("hello", HelloController);
+
+import InfoCardController from "./info_card_controller";
+application.register("info-card", InfoCardController);
 
 import ModalController from "./modal_controller";
 application.register("modal", ModalController);
 
 import EmployeeScheduleController from "./employee_schedule_controller";
 application.register("employee-schedule", EmployeeScheduleController);
+
+export { application };
