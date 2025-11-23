@@ -1,4 +1,5 @@
 // app/javascript/planning.js
+import Sortable from "sortablejs";
 document.addEventListener("turbo:load", function () {
 	console.log("🚀 Planning JS chargé");
 
