@@ -61,7 +61,7 @@
         .flex.border-t.border-gray-200.relative style="height: 80px;"
           / Colonne jour + conducteur
           .w-32.flex-shrink-0.flex.flex-col.justify-center.px-3.bg-gray-50.border-r.border-gray-200
-            .font-medium.text-sm = day.strftime('%a %d')
+            .font-medium.text-sm = l(day, format: '%a %d')
             - if assignment
               .text-xs.text-gray-600.mt-1
                 i.fas.fa-user.mr-1
