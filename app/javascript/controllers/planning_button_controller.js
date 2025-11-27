@@ -11,9 +11,9 @@ export default class extends Controller {
 	}
 
 	changeDate(offset) {
-		const urlParams = new URLSearchParams(window.location.search).get("date");
-		const currentDate = urlParams;
-		const date = new Date(currentDate);
+		const urlParams = new URLSearchParams(window.location.search);
+		const currentDate = urlParams.get("date");
+		const date = currentDate ? new Date(currentDate) : new Date();
 		date.setDate(date.getDate() + offset);
 		const newDate = date.toISOString().split("T")[0];
 		window.location.href = `/admin/planning?date=${newDate}`;
