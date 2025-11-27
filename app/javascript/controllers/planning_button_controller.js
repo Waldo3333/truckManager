@@ -16,6 +16,6 @@ export default class extends Controller {
 		const date = currentDate ? new Date(currentDate) : new Date();
 		date.setDate(date.getDate() + offset);
 		const newDate = date.toISOString().split("T")[0];
-		window.location.href = `/admin/planning?date=${newDate}`;
+		Turbo.visit(`/admin/planning?date=${newDate}`);
 	}
 }

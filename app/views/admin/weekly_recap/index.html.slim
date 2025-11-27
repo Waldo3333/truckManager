@@ -1,12 +1,12 @@
 / app/views/admin/weekly_recap/index.html.slim
 .div class="w-[100vw] pb-8"
   .flex.justify-center.border-b.pt-2
-    h1.text-3xl.text-center.font-bold.mb-6 Vue Hebdomadaire - Récapitulatif
+    h1.text-3xl.text-center.font-bold.mb-6 Vue Hebdomadaire
 
   / Navigations
-  .flex.flex-col.md:flex-row.justify-around class="w-[100%]"
+  .flex.flex-col.md:flex-row.justify-around.pt-2 class="w-[100%]"
     / Navigation Semaine
-    .bg-white.rounded-lg.shadow.p-4.mb-4
+    .bg-blue-100.rounded-lg.shadow.p-4.mb-4
       .flex.items-center.justify-between.gap-4
         = link_to admin_weekly_recap_path(week: @selected_week - 1.week, truck_id: @selected_truck_id), class: "px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded flex items-center gap-2" do
           i.fas.fa-chevron-left
@@ -19,10 +19,15 @@
         = link_to admin_weekly_recap_path(week: @selected_week + 1.week, truck_id: @selected_truck_id), class: "px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded flex items-center gap-2" do
           span Semaine
           i.fas.fa-chevron-right
-
+    /Lien vers Planning
+    = link_to admin_planning_path(date: params[:week]) do
+      .flex.flex-col.items-center
+        i class="fa-regular fa-calendar-check text-6xl text-blue-400"
+        p Modifier
+        p le Planning
     / Navigation Camion
     - if @current_truck
-      .bg-white.rounded-lg.shadow.p-4.mb-6
+      .bg-blue-100.rounded-lg.shadow.p-4.mb-6
         .flex.items-center.justify-between.gap-4
           - prev_truck = @trucks.where("id < ?", @current_truck.id).last || @trucks.last
           = link_to admin_weekly_recap_path(week: @selected_week, truck_id: prev_truck.id), class: "px-4 py-2 bg-blue-200 hover:bg-blue-300 rounded flex items-center gap-2" do
