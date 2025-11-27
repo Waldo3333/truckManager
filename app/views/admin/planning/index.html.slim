@@ -1,13 +1,19 @@
 / app/views/admin/planning/index.html.slim
-.container-fluid.px-4.py-8 data-controller="planning modal info-card"
+.container-fluid.px-4.py-8 data-controller="planning planning-button modal info-card"
   h1.text-3xl.font-bold.mb-6 Planning des interventions
 
   / Sélecteur de date
-  .bg-white.rounded-lg.shadow.p-4.mb-6
+  .flex.justify-center.bg-white.rounded-lg.shadow.p-4.mb-6
+    / Flèche jour précédent
+    button.p-2.hover:bg-gray-100.rounded-full.transition-colors data-action="click->planning-button#prevDay" type="button"
+      i.fas.fa-chevron-left.text-gray-600
     = form_with url: admin_planning_path, method: :get, local: true, class: "flex gap-4 items-center", data: { turbo: false } do |f|
       label.text-sm.font-medium.text-gray-700 Date
       = f.date_field :date, value: @selected_date, class: "px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", onchange: "this.form.submit()"
-      span.text-gray-500 = l(@selected_date, format: '%A %d %B %Y')
+    / Flèche jour suivant + Bouton fermer
+    .flex.items-center.gap-2
+      button.p-2.hover:bg-gray-100.rounded-full.transition-colors data-action="click->planning-button#nextDay" type="button"
+        i.fas.fa-chevron-right.text-gray-600
   / Layout : Sidebar + Timeline
   .flex.gap-6
     / Sidebar gauche : Chantiers à planifier
