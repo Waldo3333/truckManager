@@ -31,10 +31,7 @@
 
           .text-center
             .text-xl.font-bold = @current_truck.name
-            - if @assignments[@selected_week]
-              .text-sm.text-gray-600
-                i.fas.fa-user.mr-1
-                = @assignments[@selected_week].user.email.split('@').first
+
 
           - next_truck = @trucks.where("id > ?", @current_truck.id).first || @trucks.first
           = link_to admin_weekly_recap_path(week: @selected_week, truck_id: next_truck.id), class: "px-4 py-2 bg-blue-200 hover:bg-blue-300 rounded flex items-center gap-2" do
