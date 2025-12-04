@@ -1,0 +1,32 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="auth-title">Connexion</h2>
+
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "auth-form" }) do |f| %>
+      <div class="form-group">
+        <%= f.label :email, "Adresse email" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-input", placeholder: "votre@email.com" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password, "Mot de passe" %>
+        <%= f.password_field :password, autocomplete: "current-password", class: "form-input", placeholder: "••••••••" %>
+      </div>
+
+      <% if devise_mapping.rememberable? %>
+        <div class="form-check">
+          <%= f.check_box :remember_me, class: "form-checkbox" %>
+          <%= f.label :remember_me, "Se souvenir de moi", class: "form-check-label" %>
+        </div>
+      <% end %>
+
+      <div class="form-actions">
+        <%= f.submit "Se connecter", class: "btn-primary" %>
+      </div>
+    <% end %>
+
+    <div class="auth-links">
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</div>
