@@ -1,11 +1,12 @@
+// L'event turbo:load = page chargé
 document.addEventListener("turbo:load", function () {
 	console.log("🚀 Planning JS chargé");
 
-	// Liste des chantiers (source)
+	//on recupere notre liste de chantier, <div data-chantiers-list="true"> dans le html
 	const chantiersList = document.querySelector("[data-chantiers-list]");
 
+	// config de la bib Sortable, on crée un groupe d'entité à pouvoir drag & drop
 	if (chantiersList) {
-		console.log("✅ Liste des chantiers trouvée");
 		new Sortable(chantiersList, {
 			group: {
 				name: "chantiers",
@@ -17,18 +18,15 @@ document.addEventListener("turbo:load", function () {
 		});
 	}
 
-	// Variables globales pour le drag
+	// Variables globales pour le drag, afin d'avoir les info sur qui bouge et ou est notre souris
 	let draggedItem = null;
 	let mouseX = null;
 
-	// Timelines des camions (zones de drop)
+	//on recupere tous les <div data-truck-timeline="true"> dans le html, pour nos lignes de timeline
 	const timelines = document.querySelectorAll("[data-truck-timeline]");
-	console.log(`✅ ${timelines.length} timelines trouvées`);
 
 	timelines.forEach((timeline, index) => {
-		console.log(`⚙️ Configuration timeline ${index + 1}`);
-
-		// Capturer la position de la souris pendant le drag
+		// On traque la position de la souris pendant le drag, dragover se déclenche en continu pendant qu'on survole la zone (timeline)
 		timeline.addEventListener("dragover", function (e) {
 			mouseX = e.clientX;
 		});
@@ -40,35 +38,26 @@ document.addEventListener("turbo:load", function () {
 				put: true,
 			},
 			animation: 150,
-			draggable: "[data-intervention-id], [data-chantier-id]",
+			draggable: "[data-intervention-id], [data-chantier-id]", // Seuls les éléments avec ces attributs peuvent être droppé ici
 
+			// fonction quand on commence à glisser, on dit qui (evt.item), et on remet à zero la position de la souris
 			onStart: function (evt) {
-				console.log("🎯 onStart déclenché");
 				draggedItem = evt.item;
 				mouseX = null;
 			},
 
 			// Quand on ajoute depuis la sidebar ou depuis une autre timeline
 			onAdd: function (evt) {
-				console.log("➕ onAdd déclenché");
 				handleDrop(evt, "onAdd");
 			},
 
 			// Quand on termine le drag (même timeline ou pas)
 			onEnd: function (evt) {
-				console.log("🏁 onEnd déclenché");
 				const item = evt.item;
 				const interventionId = item.dataset.interventionId;
 
-				console.log("Détails onEnd:", {
-					interventionId,
-					sameTimeline: evt.from === evt.to,
-					mouseX,
-				});
-
 				// Si c'est une intervention ET qu'on a bougé dans la même timeline
 				if (interventionId && evt.from === evt.to && mouseX !== null) {
-					console.log("✅ Déplacement dans la même timeline détecté");
 					handleDrop(evt, "onEnd");
 				}
 
@@ -79,22 +68,16 @@ document.addEventListener("turbo:load", function () {
 	});
 
 	function handleDrop(evt, source) {
-		console.log(`🎬 handleDrop appelé depuis: ${source}`);
-
+		//l'élément HTML qu'on a glissé
 		const item = evt.item;
+		//ID du chantier (si c'est un nouveau)
 		const chantierId = item.dataset.chantierId;
+		//ID de l'intervention (si on en déplace une existante)
 		const interventionId = item.dataset.interventionId;
-		const chantierDuration = parseInt(item.dataset.chantierDuration);
+		//ID du camion (de la timeline)
 		const truckId = evt.to.dataset.truckId;
+		//Date du jour
 		const date = evt.to.dataset.date;
-
-		console.log("Données extraites:", {
-			chantierId,
-			interventionId,
-			chantierDuration,
-			truckId,
-			date,
-		});
 
 		// Utiliser la position de la souris ou de l'élément
 		const timelineRect = evt.to.getBoundingClientRect();
@@ -103,20 +86,10 @@ document.addEventListener("turbo:load", function () {
 		if (mouseX !== null) {
 			// Utiliser la position de la souris (pour les déplacements dans la même timeline)
 			relativeX = mouseX - timelineRect.left;
-			console.log("📍 Utilisation position souris:", {
-				mouseX,
-				timelineLeft: timelineRect.left,
-				relativeX,
-			});
 		} else {
 			// Utiliser la position de l'élément (pour les nouveaux drops)
 			const itemRect = item.getBoundingClientRect();
 			relativeX = itemRect.left - timelineRect.left;
-			console.log("📍 Utilisation position élément:", {
-				itemLeft: itemRect.left,
-				timelineLeft: timelineRect.left,
-				relativeX,
-			});
 		}
 
 		// 1px = 1 minute, arrondi à 15 minutes
@@ -129,16 +102,6 @@ document.addEventListener("turbo:load", function () {
 		const startHour = 7 + hours;
 		const startMinute = minutes;
 
-		console.log("Calcul du temps:", {
-			relativeX,
-			totalMinutesFrom7am,
-			roundedMinutes,
-			hours,
-			minutes,
-			startHour,
-			startMinute,
-		});
-
 		// Vérifier que l'heure est valide (entre 7h et 18h)
 		if (startHour < 7 || startHour >= 19) {
 			console.error("❌ Heure invalide:", startHour);
@@ -149,13 +112,10 @@ document.addEventListener("turbo:load", function () {
 		}
 
 		const startTime = `${String(startHour).padStart(2, "0")}:${String(startMinute).padStart(2, "0")}`;
-		console.log("⏰ Heure finale:", startTime);
 
 		if (interventionId) {
-			console.log("🔄 Mise à jour intervention existante");
 			updateIntervention(interventionId, truckId, date, startTime);
 		} else {
-			console.log("✨ Création nouvelle intervention");
 			createIntervention(chantierId, truckId, date, startTime);
 		}
 
@@ -176,13 +136,6 @@ document.addEventListener("turbo:load", function () {
 });
 
 function createIntervention(chantierId, truckId, date, startTime) {
-	console.log("📡 Envoi requête création:", {
-		chantierId,
-		truckId,
-		date,
-		startTime,
-	});
-
 	fetch("/admin/interventions", {
 		method: "POST",
 		headers: {
@@ -200,7 +153,6 @@ function createIntervention(chantierId, truckId, date, startTime) {
 	})
 		.then((response) => response.json())
 		.then((data) => {
-			console.log("✅ Réponse création:", data);
 			if (data.success) {
 				window.location.reload();
 			} else {
@@ -216,13 +168,6 @@ function createIntervention(chantierId, truckId, date, startTime) {
 }
 
 function updateIntervention(interventionId, truckId, date, startTime) {
-	console.log("📡 Envoi requête mise à jour:", {
-		interventionId,
-		truckId,
-		date,
-		startTime,
-	});
-
 	fetch(`/admin/interventions/${interventionId}`, {
 		method: "PATCH",
 		headers: {
@@ -239,7 +184,6 @@ function updateIntervention(interventionId, truckId, date, startTime) {
 	})
 		.then((response) => response.json())
 		.then((data) => {
-			console.log("✅ Réponse mise à jour:", data);
 			if (data.success) {
 				window.location.reload();
 			} else {
@@ -248,15 +192,12 @@ function updateIntervention(interventionId, truckId, date, startTime) {
 			}
 		})
 		.catch((error) => {
-			console.error("❌ Erreur mise à jour:", error);
 			alert("Erreur lors du déplacement");
 			window.location.reload();
 		});
 }
 
 function deleteIntervention(interventionId) {
-	console.log("📡 Envoi requête suppression:", interventionId);
-
 	fetch(`/admin/interventions/${interventionId}`, {
 		method: "DELETE",
 		headers: {
@@ -266,7 +207,6 @@ function deleteIntervention(interventionId) {
 	})
 		.then((response) => response.json())
 		.then((data) => {
-			console.log("✅ Réponse suppression:", data);
 			if (data.success) {
 				window.location.reload();
 			} else {
