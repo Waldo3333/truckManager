@@ -1,0 +1,59 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="auth-title">Modifier mon profil</h2>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "auth-form" }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div class="form-group">
+        <%= f.label :email, "Adresse email" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-input" %>
+      </div>
+
+      <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+        <div class="info-message">
+          En attente de confirmation pour : <%= resource.unconfirmed_email %>
+        </div>
+      <% end %>
+
+      <div class="form-section-title">Changer de mot de passe</div>
+
+      <div class="form-group">
+        <%= f.label :password, "Nouveau mot de passe" %>
+        <span class="field-hint">(laisser vide pour ne pas modifier)</span>
+        <%= f.password_field :password, autocomplete: "new-password", class: "form-input", placeholder: "••••••••" %>
+        <% if @minimum_password_length %>
+          <small class="field-help"><%= @minimum_password_length %> caractères minimum</small>
+        <% end %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password_confirmation, "Confirmez le nouveau mot de passe" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input", placeholder: "••••••••" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :current_password, "Mot de passe actuel" %>
+        <span class="field-hint">(requis pour valider les modifications)</span>
+        <%= f.password_field :current_password, autocomplete: "current-password", class: "form-input", placeholder: "••••••••", required: true %>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Mettre à jour", class: "btn-primary" %>
+      </div>
+    <% end %>
+
+    <div class="danger-zone">
+      <h3 class="danger-title">Zone dangereuse</h3>
+      <p class="danger-description">La suppression de votre compte est définitive et irréversible.</p>
+      <%= button_to "Supprimer mon compte", registration_path(resource_name),
+          data: { confirm: "Êtes-vous vraiment sûr de vouloir supprimer votre compte ?", turbo_confirm: "Êtes-vous vraiment sûr de vouloir supprimer votre compte ?" },
+          method: :delete,
+          class: "btn-danger" %>
+    </div>
+
+    <div class="auth-links">
+      <%= link_to "← Retour", :back %>
+    </div>
+  </div>
+</div>
