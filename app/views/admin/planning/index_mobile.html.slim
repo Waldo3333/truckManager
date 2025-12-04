@@ -1,0 +1,168 @@
+/ app/views/admin/planning/index_mobile.html.slim
+.mobile-planning data-controller="planning-mobile"
+  / Header avec sélecteur de date
+  .mobile-header
+    h1.mobile-title Planning Mobile
+
+    .mobile-date-selector
+      button.date-nav-btn data-action="click->planning-mobile#prevDay" type="button"
+        i.fas.fa-chevron-left
+
+      = form_with url: admin_planning_path, method: :get, local: true, data: { turbo: false } do |f|
+        = f.date_field :date, value: @selected_date, class: "mobile-date-input", data: { action: "change->planning-mobile#changeDate" }
+
+      button.date-nav-btn data-action="click->planning-mobile#nextDay" type="button"
+        i.fas.fa-chevron-right
+
+
+  / Liste des chantiers disponibles
+  .mobile-chantiers-section
+    h2.section-title 📋 Chantiers à planifier ce jour
+
+    - if @chantiers.any?
+      .mobile-chantiers-list
+        - @chantiers.each do |chantier|
+          .mobile-chantier-card data-action="click->planning-mobile#selectChantier" data-chantier-id=chantier.id data-chantier-name=chantier.name data-chantier-duration=chantier.duration data-planning-mobile-target="chantier"
+            .chantier-header
+              .chantier-name = chantier.name
+              .chantier-duration
+                i.fas.fa-clock
+                = "#{chantier.duration}min"
+
+            .chantier-location
+              i.fas.fa-map-marker-alt
+              = chantier.location
+
+            - if chantier.extra_equipment || chantier.two_operators
+              .chantier-badges
+                - if chantier.extra_equipment
+                  .badge.badge-equipment
+                    i.fa-solid.fa-screwdriver-wrench
+                    | Équipement
+                - if chantier.two_operators
+                  .badge.badge-operators
+                    i.fa-solid.fa-people-arrows
+                    | 2 opérateurs
+    - else
+      .empty-state
+        i.fas.fa-check-circle
+        p Tous les chantiers sont planifiés !
+  / Rendu visuel du planning (version compacte)
+  .mobile-visual-planning
+    h2.section-title 📅 Planning du jour
+
+    / Timeline compacte
+    .mobile-timeline-container
+      / Échelle des heures
+      .mobile-hours-scale
+        - (7..18).each do |hour|
+          .hour-mark = "#{hour}h"
+
+      / Camions avec interventions
+      - @trucks.each do |truck|
+        .mobile-truck-row
+          .truck-info
+            .truck-name = truck.name
+            - assignment = @daily_assignments[truck.id]
+            - if assignment
+              .truck-driver
+                i.fas.fa-user
+                = assignment.user.email.split('@').first
+              / Bouton pour changer le conducteur
+              button.driver-change-btn data-action="click->planning-mobile#openDriverModal" data-truck-id=truck.id data-truck-name=truck.name data-assignment-id=assignment.id type="button"
+                i.fas.fa-pen
+            - else
+              .truck-driver.unassigned Aucun conducteur
+              / Bouton pour assigner un conducteur
+              button.driver-add-btn data-action="click->planning-mobile#openDriverModal" data-truck-id=truck.id data-truck-name=truck.name type="button"
+                i.fas.fa-plus
+
+          .truck-timeline data-truck-id=truck.id
+            / Grille horaire
+            .timeline-grid
+              - (7..18).each do |hour|
+                .hour-block
+
+            / Interventions
+            - truck.interventions.where(date: @selected_date).each do |intervention|
+              - start_hour = intervention.start_time.hour
+              - start_minute = intervention.start_time.min
+              - duration_minutes = intervention.duration_in_minutes
+              - left_percent = ((start_hour - 7) * 60 + start_minute) / 660.0 * 100
+              - width_percent = duration_minutes / 660.0 * 100
+
+              .mobile-intervention class=(intervention.chantier.two_operators ? "two-operators" : "") style="left: #{left_percent}%; width: #{width_percent}%;" data-action="click->planning-mobile#moveIntervention" data-intervention-id=intervention.id data-chantier-id=intervention.chantier_id data-chantier-name=intervention.chantier.name data-chantier-duration=intervention.chantier.duration data-current-truck-id=truck.id
+                .intervention-name = intervention.chantier.name.truncate(15)
+                .intervention-time = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
+
+  / Modal 1 : Sélection du camion
+  .mobile-modal.hidden data-planning-mobile-target="truckModal"
+    .modal-overlay data-action="click->planning-mobile#closeTruckModal"
+    .modal-content
+      .modal-header
+        h3.modal-title Sélectionner un camion
+        button.modal-close data-action="click->planning-mobile#closeTruckModal" type="button" ×
+
+      .modal-body
+        .selected-chantier-info data-planning-mobile-target="selectedChantierInfo"
+          / Rempli dynamiquement par JS
+
+        .trucks-grid
+          - @trucks.each do |truck|
+            - assignment = @daily_assignments[truck.id]
+            .truck-option data-action="click->planning-mobile#selectTruck" data-truck-id=truck.id data-truck-name=truck.name
+              .truck-option-name = truck.name
+              - if assignment
+                .truck-option-driver
+                  i.fas.fa-user
+                  = assignment.user.email.split('@').first
+              - else
+                .truck-option-driver.unassigned
+                  i.fas.fa-user-slash
+                  | Non assigné
+
+  / Modal 2 : Sélection de l'heure
+  .mobile-modal.hidden data-planning-mobile-target="timeModal"
+    .modal-overlay data-action="click->planning-mobile#closeTimeModal"
+    .modal-content
+      .modal-header
+        h3.modal-title Choisir l'heure de début
+        button.modal-close data-action="click->planning-mobile#closeTimeModal" type="button" ×
+
+      .modal-body
+        .planning-info data-planning-mobile-target="planningInfo"
+          / Rempli dynamiquement
+
+        .time-slots-grid
+          - (7..18).each do |hour|
+            - [0, 15, 30, 45].each do |minutes|
+              - time_string = sprintf("%02d:%02d", hour, minutes)
+              .time-slot data-action="click->planning-mobile#selectTime" data-time=time_string
+                = time_string
+
+  / Modal 3 : Assignation conducteur
+  .mobile-modal.hidden data-planning-mobile-target="driverModal"
+    .modal-overlay data-action="click->planning-mobile#closeDriverModal"
+    .modal-content
+      .modal-header
+        h3.modal-title Assigner un conducteur
+        button.modal-close data-action="click->planning-mobile#closeDriverModal" type="button" ×
+
+      .modal-body
+        .truck-info-display data-planning-mobile-target="driverTruckInfo"
+          / Rempli dynamiquement
+
+        = form_with model: [:admin, DailyAssignment.new], local: true, data: { planning_mobile_target: "driverForm", action: "submit->planning-mobile#submitDriver" }, class: "driver-form" do |f|
+          = f.hidden_field :truck_id, data: { planning_mobile_target: "driverTruckId" }
+          = f.hidden_field :date, value: @selected_date
+
+          .form-group
+            = f.label :user_id, "Conducteur", class: "form-label"
+            = f.select :user_id, @available_users.map { |u| [u.email, u.id] }, { include_blank: "Sélectionner un conducteur" }, class: "form-select"
+
+          .form-actions
+            button.btn.btn-secondary type="button" data-action="click->planning-mobile#closeDriverModal" Annuler
+            = f.submit "Assigner", class: "btn btn-primary"
+
+  / Toast de notification
+  .mobile-toast.hidden data-planning-mobile-target="toast"
