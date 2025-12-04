@@ -1,5 +1,15 @@
-/ app/views/admin/weekly_recap/index.html.slim
-.div class="w-[100vw] pb-8"
+
+/ Message overlay qui s'affiche uniquement en portrait sur mobile
+.fixed.inset-0.bg-gray-900.flex.items-center.justify-center.z-50.portrait:flex.landscape:hidden.md:hidden
+  .text-center.text-white.p-8
+    i.fas.fa-mobile-screen-button.text-6xl.mb-4.animate-bounce
+    h2.text-2xl.font-bold.mb-4 Rotation requise
+    p.text-lg Veuillez tourner votre appareil en mode paysage
+    .mt-6
+      i.fas.fa-rotate.text-4xl.animate-spin style="animation-duration: 2s;"
+
+/ Contenu principal (caché en portrait sur mobile)
+.hidden.landscape:block.md:block class="w-[100vw] pb-8"
   .flex.justify-center.border-b.pt-2
     h1.text-3xl.text-center.font-bold.mb-6 Vue Hebdomadaire
 
@@ -45,7 +55,7 @@
   /container planning + stats
   .flex.flex-col.md:flex-row
     / Timeline de la semaine
-    .bg-white.rounded-lg.shadow.p-4.mb-6 class="w-[80vw]"
+    .bg-white.rounded-lg.shadow.p-4.mb-6 class="md:w-screen w-fit"
       / En-tête des heures
       .flex.mb-2
         .w-32.flex-shrink-0.text-sm.font-medium.text-gray-600

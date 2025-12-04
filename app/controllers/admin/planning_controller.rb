@@ -19,5 +19,17 @@ class Admin::PlanningController < ApplicationController
 
     # Users disponibles (salariés uniquement)
     @available_users = User.where(admin: false).order(:email)
+
+    if mobile_device?
+      render :index_mobile
+    else
+      render :index
+    end
+  end
+
+  private
+
+  def mobile_device?
+    request.user_agent =~ /Mobile|Android|iPhone|iPad|iPod/i
   end
 end

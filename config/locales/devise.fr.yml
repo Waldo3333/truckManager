@@ -1,0 +1,28 @@
+# config/locales/devise.fr.yml
+fr:
+  devise:
+    sessions:
+      signed_in: "Connexion réussie"
+      signed_out: "Déconnexion réussie"
+      already_signed_out: "Vous êtes déjà déconnecté"
+    registrations:
+      signed_up: "Bienvenue, votre compte a été créé"
+      updated: "Votre compte a été mis à jour"
+      destroyed: "Votre compte a été supprimé"
+    passwords:
+      send_instructions: "Vous allez recevoir un email avec les instructions pour réinitialiser votre mot de passe"
+      updated: "Votre mot de passe a été modifié"
+    confirmations:
+      send_instructions: "Vous allez recevoir un email de confirmation"
+      confirmed: "Votre compte a été confirmé"
+    unlocks:
+      send_instructions: "Vous allez recevoir un email avec les instructions pour débloquer votre compte"
+      unlocked: "Votre compte a été débloqué"
+    failure:
+      already_authenticated: "Vous êtes déjà connecté"
+      unauthenticated: "Vous devez vous connecter pour continuer"
+      invalid: "Email ou mot de passe incorrect"
+      not_found_in_database: "Email ou mot de passe incorrect"
+      timeout: "Votre session a expiré, veuillez vous reconnecter"
+      inactive: "Votre compte n'est pas encore activé"
+      locked: "Votre compte est verrouillé"
