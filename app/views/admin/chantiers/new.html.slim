@@ -40,7 +40,7 @@
             = f.date_field :scheduled_date, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             p.text-xs.text-gray-500.mt-1 Laissez vide si pas encore planifié
 
-        .flex.justify-between.space-x-4
+        .flex.justify-between.space-x-4.flex-col.md:flex-row.gap-2
 
           .flex.gap-2
             = f.label :extra_equipment, class: "flex items-center cursor-pointer"
@@ -52,4 +52,4 @@
               span.text-sm.font-medium.text-gray-700 Deux opérateurs
           .flex.gap-2
             = link_to "Annuler", admin_chantiers_path, class: "px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
-            = f.submit "Créer le chantier", class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            = f.submit "Créer le chantier", class: "px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"

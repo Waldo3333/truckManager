@@ -17,7 +17,7 @@
 
       / Boutons actions
       .flex.gap-2.justify-center
-        button.flex-1.px-4.py-2.bg-blue-500.text-white.rounded-lg.hover:bg-blue-600.transition-colors.flex.items-center.justify-center.gap-2 data-action="click->employee-schedule#toggleCalendar" type="button"
+        button.flex-1.px-4.py-2.bg-green-500.text-white.rounded-lg.hover:bg-green-600.transition-colors.flex.items-center.justify-center.gap-2 data-action="click->employee-schedule#toggleCalendar" type="button"
           i.fas.fa-calendar
           span Semaine
 
@@ -35,9 +35,9 @@
       - if params[:compare_user_id].blank?
         / Mode solo
         - if @my_assignment
-          .bg-blue-50.border.border-blue-200.rounded-lg.p-4.mb-4
+          .bg-green-50.border.border-green-200.rounded-lg.p-4.mb-4
             .flex.items-center.gap-3
-              i.fas.fa-truck.text-3xl.text-blue-600
+              i.fas.fa-truck.text-3xl.text-green-600
               div
                 .text-xl.font-bold = @my_assignment.truck.name
                 .text-sm.text-gray-600 = @user.email.split('@').first.capitalize
@@ -47,9 +47,9 @@
       - else
         / Mode comparaison - Info des 2 camions
         .grid.grid-cols-2.gap-4.mb-4
-          .bg-blue-50.border.border-blue-200.rounded-lg.p-3
+          .bg-green-50.border.border-green-200.rounded-lg.p-3
             .flex.items-center.gap-2
-              i.fas.fa-truck.text-xl.text-blue-600
+              i.fas.fa-truck.text-xl.text-green-600
               div
                 .text-sm.font-bold Moi
                 - if @my_assignment
@@ -130,7 +130,7 @@
     .p-6 data-employee-schedule-target="calendarContent"
       / Le contenu sera chargé dynamiquement ici
       .text-center.py-8
-        i.fas.fa-spinner.fa-spin.text-3xl.text-blue-500
+        i.fas.fa-spinner.fa-spin.text-3xl.text-green-500
 
 / Modal d'info chantier
 = render 'admin/chantiers/info_modal'

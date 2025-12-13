@@ -34,5 +34,5 @@
     - is_selected = day == selected_date
     - has_work = my_work_days.include?(day)
 
-    = link_to employee_schedule_path(date: day, compare_user_id: compare_user_id), class: "aspect-square flex items-center justify-center rounded-lg text-sm transition-colors #{is_today ? 'ring-2 ring-blue-500' : ''} #{is_selected ? 'bg-blue-500 text-white font-bold' : has_work && is_current_month ? 'bg-green-100 text-green-800 font-medium' : is_current_month ? 'text-gray-600 hover:bg-gray-100' : 'text-gray-300'}", data: { action: "click->employee-schedule#closeCalendar" } do
+    = link_to employee_schedule_path(date: day, compare_user_id: compare_user_id), class: "aspect-square flex items-center justify-center rounded-lg text-sm transition-colors #{is_today ? 'ring-2 ring-green-500' : ''} #{is_selected ? 'bg-green-500 text-white font-bold' : has_work && is_current_month ? 'bg-green-100 text-green-800 font-medium' : is_current_month ? 'text-gray-600 hover:bg-gray-100' : 'text-gray-300'}", data: { action: "click->employee-schedule#closeCalendar" } do
       = day.day

@@ -4,7 +4,7 @@
 
   / Bouton principal vers le planning
   .mb-8
-    = link_to admin_planning_path, class: "block bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg shadow-lg p-6 transition-all transform hover:scale-102" do
+    = link_to admin_planning_path, class: "block bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg shadow-lg p-6 transition-all transform hover:scale-102" do
       .flex.items-center.justify-between.flex-col.md:flex-row.gap-3
         div
           .text-2xl.font-bold.text-center 📅 Planning des interventions
@@ -20,14 +20,14 @@
 
   .flex.gap-6.justify-between.mb-8 class="w-[100%]"
     / Demain
-    .bg-blue-300.rounded-lg.shadow.p-6.flex.items-center.justify-between class=" w-[40vw] md:w-[20vw] h-[20vh]"
+    .bg-green-300.rounded-lg.shadow.p-6.flex.items-center.justify-between class=" w-[40vw] md:w-[20vw] h-[20vh]"
       .flex.flex-col
         .text-gray-500.text-sm.uppercase Demain
         .text-3xl.font-bold.mt-2 = "#{@interventions_tomorrow}"
         .text-gray-500.text-sm.uppercase.mt-2 intervention#{@interventions_tomorrow > 1 ? 's' : ''}
     / Planning semaine
     = link_to admin_weekly_recap_path do
-      .bg-blue-300.rounded-lg.shadow.p-6.flex class="w-[40vw] md:w-auto grow h-[20vh]"
+      .bg-green-300.rounded-lg.shadow.p-6.flex class="w-[40vw] md:w-auto grow h-[20vh]"
         .flex.items-center.w-100.justify-around.gap-3.w-max
           .flex.flex-col.items-center
             .text-gray-500.text-sm.uppercase Récap. Semaine
@@ -44,7 +44,7 @@
                   i.fas.fa-truck.text-xs class=(count > 0 ? "text-green-900" : "text-gray-400")
   .flex.gap-6.mb-8.justify-between.flex-col.md:flex-row class="w-[100%]"
     / Card Chantiers
-    .bg-sky-900.rounded-lg.shadow.p-6.flex.items-center.justify-between class="w-[max] md:w-[40vw] h-[20vh]"
+    .bg-emerald-700.rounded-lg.shadow.p-6.flex.items-center.justify-between class="w-[max] md:w-[40vw] h-[20vh]"
       .flex.flex-col
         .text-white.text-sm.uppercase Chantiers
         .text-3xl.text-white.font-bold.mt-2 = @chantiers_count
@@ -57,7 +57,7 @@
 
     / Card Camions
     = link_to admin_trucks_path do
-      .bg-sky-900.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between class="w-[max] md:w-[20vw] h-[20vh]"
+      .bg-emerald-700.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between class="w-[max] md:w-[20vw] h-[20vh]"
         .flex.flex-col
           .text-white.text-sm.uppercase Camions
           .text-white.text-3xl.font-bold.mt-2 = @trucks_count
@@ -67,7 +67,7 @@
 
     / Card Salariés
     = link_to admin_users_path do
-      .bg-sky-900.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between class="w-[max] md:w-[20vw] h-[20vh]"
+      .bg-emerald-700.rounded-lg.shadow.p-6.hover:scale-110.transition-all.transform.flex.items-center.justify-between class="w-[max] md:w-[20vw] h-[20vh]"
         .flex.flex-col
           .text-white.text-sm.uppercase Personnel
           .text-white.text-3xl.font-bold.mt-2 = @users_count

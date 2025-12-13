@@ -16,9 +16,9 @@
   / Navigations
   .flex.flex-col.md:flex-row.justify-around.pt-2 class="w-[100%]"
     / Navigation Semaine
-    .bg-blue-100.rounded-lg.shadow.p-4.mb-4
+    .bg-green-400.rounded-lg.shadow.p-4.mb-4.flex.justify-around.items-center
       .flex.items-center.justify-between.gap-4
-        = link_to admin_weekly_recap_path(week: @selected_week - 1.week, truck_id: @selected_truck_id), class: "px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded flex items-center gap-2" do
+        = link_to admin_weekly_recap_path(week: @selected_week - 1.week, truck_id: @selected_truck_id), class: "px-4 py-2 bg-green-200 hover:bg-green-300 rounded flex items-center gap-2" do
           i.fas.fa-chevron-left
           span Semaine
 
@@ -26,21 +26,21 @@
           .text-lg.font-bold = "Semaine #{@selected_week.cweek}"
           .text-sm.text-gray-600 = "#{@week_days.first.strftime('%d %b')} - #{@week_days.last.strftime('%d %b %Y')}"
 
-        = link_to admin_weekly_recap_path(week: @selected_week + 1.week, truck_id: @selected_truck_id), class: "px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded flex items-center gap-2" do
+        = link_to admin_weekly_recap_path(week: @selected_week + 1.week, truck_id: @selected_truck_id), class: "px-4 py-2 bg-green-200 hover:bg-green-300 rounded flex items-center gap-2" do
           span Semaine
           i.fas.fa-chevron-right
     /Lien vers Planning
     = link_to admin_planning_path(date: params[:week]) do
       .flex.flex-col.items-center
-        i class="fa-regular fa-calendar-check text-6xl text-blue-400"
+        i class="fa-regular fa-calendar-check text-6xl text-green-400"
         p Gérer
         p cette semaine
     / Navigation Camion
     - if @current_truck
-      .bg-blue-100.rounded-lg.shadow.p-4.mb-6
+      .bg-green-400.rounded-lg.shadow.p-4.mb-6.flex.justify-around.items-center
         .flex.items-center.justify-between.gap-4
           - prev_truck = @trucks.where("id < ?", @current_truck.id).last || @trucks.last
-          = link_to admin_weekly_recap_path(week: @selected_week, truck_id: prev_truck.id), class: "px-4 py-2 bg-blue-200 hover:bg-blue-300 rounded flex items-center gap-2" do
+          = link_to admin_weekly_recap_path(week: @selected_week, truck_id: prev_truck.id), class: "px-4 py-2 bg-green-200 hover:bg-green-300 rounded flex items-center gap-2" do
             i.fas.fa-chevron-left
             span Camion précédent
 
@@ -49,7 +49,7 @@
 
 
           - next_truck = @trucks.where("id > ?", @current_truck.id).first || @trucks.first
-          = link_to admin_weekly_recap_path(week: @selected_week, truck_id: next_truck.id), class: "px-4 py-2 bg-blue-200 hover:bg-blue-300 rounded flex items-center gap-2" do
+          = link_to admin_weekly_recap_path(week: @selected_week, truck_id: next_truck.id), class: "px-4 py-2 bg-green-200 hover:bg-green-300 rounded flex items-center gap-2" do
             span Camion suivant
             i.fas.fa-chevron-right
   /container planning + stats

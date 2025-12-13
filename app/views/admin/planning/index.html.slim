@@ -6,7 +6,7 @@
   .flex.justify-center.bg-white.rounded-lg.shadow.p-4.mb-6.gap-4
     / Flèche jour précédent
     button.p-2.hover:bg-gray-100.rounded-full.transition-colors data-action="click->planning-button#prevDay" type="button"
-      .flex.items-center.gap-2.bg-blue-300.p-2.rounded-2xl.w-max
+      .flex.items-center.gap-2.bg-green-300.p-2.rounded-2xl.w-max
           i.fas.fa-chevron-left.text-gray-600
           p Précedent
     = form_with url: admin_planning_path, method: :get, local: true, class: "flex gap-4 items-center", data: { turbo: false } do |f|
@@ -15,7 +15,7 @@
     / Flèche jour suivant + Bouton fermer
     .flex.items-center.gap-2
       button.p-2.hover:bg-gray-100.rounded-full.transition-colors data-action="click->planning-button#nextDay" type="button"
-        .flex.items-center.gap-2.bg-blue-300.p-2.rounded-2xl.justify-end.w-max
+        .flex.items-center.gap-2.bg-green-300.p-2.rounded-2xl.justify-end.w-max
           p Suivant
           i.fas.fa-chevron-right.text-gray-600
   / Layout : Sidebar + Timeline
@@ -99,11 +99,11 @@
                 - left_offset = ((start_hour - 7) * 60) + (start_minute * 60 / 60.0)
                 - width = duration_minutes * 60 / 60.0
 
-                .absolute.rounded.px-2.py-1.text-xs.text-white.cursor-move.group.shadow   class=(intervention.chantier.two_operators ? "bg-orange-400 border border-orange-500" : "bg-blue-400 border border-blue-500") style="left: #{left_offset}px; width: #{width}px; top: 15px; height: 70px; overflow: hidden;"  data-intervention-id=intervention.id data-chantier-id=intervention.chantier_id data-chantier-duration=intervention.chantier.duration data-action="mousedown->info-card#startClick click->info-card#open"
+                .absolute.rounded.px-2.py-1.text-xs.text-white.cursor-move.group.shadow   class=(intervention.chantier.two_operators ? "bg-orange-400 border border-orange-500" : "bg-green-400 border border-green-500") style="left: #{left_offset}px; width: #{width}px; top: 15px; height: 70px; overflow: hidden;"  data-intervention-id=intervention.id data-chantier-id=intervention.chantier_id data-chantier-duration=intervention.chantier.duration data-action="mousedown->info-card#startClick click->info-card#open"
                   .flex.gap-1
                     .font-medium.truncate = intervention.chantier.name
                     - if intervention.chantier.extra_equipment
-                      i class="fa-solid fa-screwdriver-wrench text-xs text-gray-300 opacity-90" ⚠️
+                      i class="fa-solid fa-screwdriver-wrench text-xs text-gray-600 opacity-90" ⚠️
                   .text-xs.opacity-90
                     = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
                   .text-xs.opacity-90
