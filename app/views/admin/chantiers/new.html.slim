@@ -24,9 +24,23 @@
             = f.label :phone, "N° Tel", class: "block text-sm font-medium text-gray-700 mb-2"
             = f.text_field :phone, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: "0607080910"
 
-          div
+          / Autocomplete Mapbox pour le lieu
+          .form-group data-controller="mapbox-autocomplete" data-mapbox-autocomplete-access-token-value="#{ENV['MAPBOX_ACCESS_TOKEN']}"
             = f.label :location, "Lieu", class: "block text-sm font-medium text-gray-700 mb-2"
-            = f.text_field :location, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: "Ex: 123 Rue de Paris, Bordeaux"
+            .relative
+              = f.text_field :location, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500", placeholder: "Commencez à taper une adresse...", autocomplete: "off", data: { mapbox_autocomplete_target: "input", action: "input->mapbox-autocomplete#search blur->mapbox-autocomplete#hideResults" }
+              .absolute.z-10.w-full.bg-white.border.border-gray-300.rounded-md.shadow-lg.mt-1.hidden data-mapbox-autocomplete-target="results"
+
+            / Champs cachés pour stocker les coordonnées
+            = f.hidden_field :latitude, data: { mapbox_autocomplete_target: "latitude" }
+            = f.hidden_field :longitude, data: { mapbox_autocomplete_target: "longitude" }
+
+            / Affichage des coordonnées (optionnel, pour debug)
+            .text-xs.text-gray-500.mt-1
+              span Coordonnées :
+              span data-mapbox-autocomplete-target="latitude" = @chantier.latitude || "?"
+              span ,
+              span data-mapbox-autocomplete-target="longitude" = @chantier.longitude || "?"
           div
             = f.label :desctiprion, "Description", class: "block text-sm font-medium text-gray-700 mb-2"
             = f.text_area :description, rows: 4, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: "Premiers mot clés.."
