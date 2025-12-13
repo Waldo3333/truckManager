@@ -2,9 +2,9 @@
 .container.mx-auto.px-4.py-8
   .flex.justify-between.items-center.mb-6
     h1.text-3xl.font-bold Gestion des chantiers
-    = link_to "➕ Nouveau chantier", new_admin_chantier_path, class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+    = link_to "➕ Nouveau chantier", new_admin_chantier_path, class: "bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600"
 
-  .bg-white.rounded-lg.shadow.overflow-hidden
+  .bg-white.rounded-lg.shadow.overflow-hidden.md:block.hidden
     table.min-w-full.divide-y.divide-gray-200
       thead.bg-gray-50
         tr
@@ -26,3 +26,33 @@
             td.px-6.py-4.whitespace-nowrap.text-right.text-sm.font-medium
               = link_to "Modifier", edit_admin_chantier_path(chantier), class: "text-blue-600 hover:text-blue-900 mr-4"
               = button_to "Supprimer", admin_chantier_path(chantier), method: :delete, data: { turbo_confirm: "Êtes-vous sûr ?" }, class: "text-red-600 hover:text-red-900"
+
+  / Version mobile (cartes)
+  .md:hidden.space-y-4
+    - @chantiers.each do |chantier|
+      .bg-white.rounded-lg.shadow.p-4.border.border-gray-200
+        .mb-3
+          h3.text-lg.font-bold.text-gray-900.mb-1 = chantier.name
+          .flex.items-center.text-sm.text-gray-600
+            span.mr-1 📍
+            = chantier.location
+
+        .space-y-2.mb-4
+          .flex.justify-between.items-center
+            span.text-sm.text-gray-500 Durée
+            span.font-medium.text-gray-900
+              = "#{chantier.duration} min"
+              span.text-gray-500.text-sm.ml-1 = "(#{chantier.duration_in_hours}h)"
+
+          .flex.justify-between.items-center
+            span.text-sm.text-gray-500 Prévu le
+            - if chantier.scheduled_date
+              span.font-medium.text-gray-900 = chantier.scheduled_date.strftime("%d/%m/%Y")
+            - else
+              span.text-gray-400.italic.text-sm Aucune date prévue
+
+        .flex.gap-2.pt-3.border-t.border-gray-200.justify-around
+          = link_to edit_admin_chantier_path(chantier), class: "bg-blue-500 text-white text-center py-2 px-4 rounded hover:bg-blue-600 transition" do
+            span ✏️ Modifier
+          = button_to admin_chantier_path(chantier), method: :delete, data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer ce chantier ?" }, class: "flex-1 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition" do
+            span 🗑️ Supprimer
