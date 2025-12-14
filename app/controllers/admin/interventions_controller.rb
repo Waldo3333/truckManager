@@ -26,6 +26,56 @@ class Admin::InterventionsController < ApplicationController
     render json: { success: true }
   end
 
+  def batch_update
+    ActiveRecord::Base.transaction do
+      # Créations
+      params[:creates]&.each do |create_params|
+        intervention = Intervention.new(
+          chantier_id: create_params[:chantier_id],
+          truck_id: create_params[:truck_id],
+          date: create_params[:date],
+          start_time: create_params[:start_time]
+        )
+
+        unless intervention.save
+          render json: { success: false, error: intervention.errors.full_messages.join(', ') }
+          raise ActiveRecord::Rollback
+          return
+        end
+      end
+
+      # Modifications
+      params[:updates]&.each do |update_params|
+        intervention = Intervention.find(update_params[:id])
+
+        unless intervention.update(
+          truck_id: update_params[:truck_id],
+          date: update_params[:date],
+          start_time: update_params[:start_time]
+        )
+          render json: { success: false, error: intervention.errors.full_messages.join(', ') }
+          raise ActiveRecord::Rollback
+          return
+        end
+      end
+
+      # Suppressions
+      params[:deletes]&.each do |intervention_id|
+        intervention = Intervention.find(intervention_id)
+
+        unless intervention.destroy
+          render json: { success: false, error: "Impossible de supprimer l'intervention" }
+          raise ActiveRecord::Rollback
+          return
+        end
+      end
+
+      render json: { success: true, message: "Toutes les modifications ont été sauvegardées" }
+    end
+  rescue => e
+    render json: { success: false, error: e.message }
+  end
+
   private
 
   def set_intervention
