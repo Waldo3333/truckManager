@@ -45,6 +45,18 @@ export default class extends Controller {
 			this.pendingChanges.updates.length +
 			this.pendingChanges.deletes.length;
 
+		// Vérifier si c'est un bouton d'assignation bloqué (AVANT de check totalChanges === 0)
+		const assignButton = event.target.closest('[data-action*="modal#open"]');
+
+		if (assignButton && assignButton.dataset.blocked === "true") {
+			event.preventDefault();
+			event.stopPropagation();
+			alert(
+				"⚠️ Veuillez d'abord sauvegarder vos modifications d'interventions avant d'assigner un conducteur."
+			);
+			return;
+		}
+
 		if (totalChanges === 0) {
 			return;
 		}
@@ -103,14 +115,31 @@ export default class extends Controller {
 			this.pendingChanges.updates.length +
 			this.pendingChanges.deletes.length;
 
+		const form = event.target;
+
+		if (form.action && form.action.includes("daily_assignments")) {
+			const submitButton = form.querySelector('button[type="submit"]');
+
+			if (submitButton && submitButton.dataset.blocked === "true") {
+				event.preventDefault();
+				event.stopPropagation();
+				alert(
+					"⚠️ Veuillez d'abord sauvegarder vos modifications d'interventions avant de modifier les assignations."
+				);
+				return;
+			}
+		}
+
 		if (totalChanges === 0) {
 			return;
 		}
 
 		// Ne pas bloquer le formulaire de date du planning
-		if (event.target.closest('[data-controller*="planning"]')) {
+		if (form.closest('[data-controller*="planning"]')) {
 			return;
 		}
+
+		// ← SUPPRIMER LES 4 LIGNES EN DOUBLE ICI
 
 		event.preventDefault();
 		event.stopPropagation();
@@ -213,6 +242,8 @@ export default class extends Controller {
 	}
 
 	handleDrop(evt, source) {
+		console.log(`🎬 handleDrop appelé depuis: ${source}`);
+
 		const item = evt.item;
 		const chantierId = item.dataset.chantierId;
 		const interventionId = item.dataset.interventionId;
@@ -247,21 +278,24 @@ export default class extends Controller {
 		const startTime = `${String(startHour).padStart(2, "0")}:${String(startMinute).padStart(2, "0")}`;
 
 		if (interventionId) {
+			// Modification d'une intervention existante → Mode draft
 			this.addPendingUpdate(interventionId, truckId, date, startTime, item);
+
+			item.classList.add("pending-change");
+			const leftOffset = roundedMinutes;
+			item.style.left = `${leftOffset}px`;
+			const originalBorder = item.style.border;
+			item.style.border = "2px dashed #f59e0b";
+			item.style.boxShadow = "0 0 10px rgba(245, 158, 11, 0.5)";
+			item.dataset.originalBorder = originalBorder;
 		} else {
+			// Création nouvelle → Ajouter aux pending et sauvegarder tout immédiatement
+			item.remove();
 			this.addPendingCreate(chantierId, truckId, date, startTime, item);
+
+			// Sauvegarder immédiatement (avec toutes les modifs pending)
+			this.saveAllChanges();
 		}
-
-		item.classList.add("pending-change");
-
-		const leftOffset = roundedMinutes;
-		item.style.left = `${leftOffset}px`;
-
-		const originalBorder = item.style.border;
-		item.style.border = "2px dashed #f59e0b";
-		item.style.boxShadow = "0 0 10px rgba(245, 158, 11, 0.5)";
-
-		item.dataset.originalBorder = originalBorder;
 	}
 
 	addPendingCreate(chantierId, truckId, date, startTime, itemElement) {
@@ -302,18 +336,25 @@ export default class extends Controller {
 	}
 
 	deletePendingIntervention(interventionId) {
+		// Trouver l'élément dans le DOM
 		const element = this.element.querySelector(
 			`[data-intervention-id="${interventionId}"]`
 		);
 
 		if (element) {
-			element.style.opacity = "0.3";
-			element.style.textDecoration = "line-through";
-			element.classList.add("pending-delete");
+			// Retirer visuellement immédiatement
+			element.remove();
 		}
 
+		// Ajouter aux suppressions pending
 		this.pendingChanges.deletes.push(interventionId);
-		this.updateSaveButton();
+		console.log(
+			"🗑️ Suppression ajoutée aux pending:",
+			this.pendingChanges.deletes
+		);
+
+		// Sauvegarder immédiatement (avec toutes les modifs pending)
+		this.saveAllChanges();
 	}
 
 	updateSaveButton() {
@@ -321,18 +362,69 @@ export default class extends Controller {
 			this.pendingChanges.creates.length +
 			this.pendingChanges.updates.length +
 			this.pendingChanges.deletes.length;
+
+		console.log(`📊 Total de changements pending: ${totalChanges}`);
+
 		if (this.hasSaveButtonTarget) {
 			if (totalChanges > 0) {
 				this.saveButtonTarget.classList.remove("hidden");
 				this.saveButtonTarget.disabled = false;
+
+				// Désactiver les boutons d'assignation
+				this.disableAssignmentButtons();
 			} else {
 				this.saveButtonTarget.classList.add("hidden");
+
+				// Réactiver les boutons d'assignation
+				this.enableAssignmentButtons();
 			}
 		}
 
 		if (this.hasPendingCountTarget) {
 			this.pendingCountTarget.textContent = totalChanges;
 		}
+	}
+
+	disableAssignmentButtons() {
+		// Tous les boutons d'assignation (+ Assigner, ✎, et ×)
+		const assignButtons = this.element.querySelectorAll(
+			'[data-action*="modal#open"], ' +
+				'form[action*="daily_assignments"] button[type="submit"]'
+		);
+
+		assignButtons.forEach((button) => {
+			button.classList.add(
+				"opacity-50",
+				"cursor-not-allowed",
+				"assignment-blocked"
+			);
+			button.dataset.blocked = "true";
+
+			// Changer le title
+			button.dataset.originalTitle = button.title || "";
+			button.title = "⚠️ Sauvegardez d'abord vos modifications";
+		});
+	}
+
+	enableAssignmentButtons() {
+		const assignButtons = this.element.querySelectorAll(
+			'[data-action*="modal#open"], ' +
+				'form[action*="daily_assignments"] button[type="submit"]'
+		);
+
+		assignButtons.forEach((button) => {
+			button.classList.remove(
+				"opacity-50",
+				"cursor-not-allowed",
+				"assignment-blocked"
+			);
+			button.dataset.blocked = "false";
+
+			// Restaurer le title original
+			if (button.dataset.originalTitle) {
+				button.title = button.dataset.originalTitle;
+			}
+		});
 	}
 
 	async saveAllChanges() {

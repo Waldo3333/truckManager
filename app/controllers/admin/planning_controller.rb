@@ -25,7 +25,10 @@ class Admin::PlanningController < ApplicationController
                                         .index_by(&:truck_id)
 
     # Users disponibles (salariés uniquement)
-    @available_users = User.where(admin: false).order(:email)
+    assigned_user_ids = DailyAssignment.where(date: @selected_date).pluck(:user_id)
+    @available_users = User.where(admin: false)
+                          .where.not(id: assigned_user_ids)
+                          .order(:email)
 
     if mobile_device?
       render :index_mobile

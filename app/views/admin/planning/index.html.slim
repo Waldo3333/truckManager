@@ -93,8 +93,10 @@
                   .flex.items-center.gap-1
                     span.text-xs 👤
                     span.text-xs.font-medium = assignment.user.email.split('@').first
-                  button.text-blue-500.hover:text-blue-700.text-xs data-action="click->modal#open" data-truck-id=truck.id data-date=@selected_date data-assignment-id=assignment.id type="button"
-                    | ✎
+                  .flex.gap-1
+                    button.text-blue-500.hover:text-blue-700 data-action="click->modal#open" data-truck-id=truck.id data-date=@selected_date data-assignment-id=assignment.id type="button" title="Modifier l'assignation"
+                      | ✎
+                    = button_to "×", admin_daily_assignment_path(assignment), method: :delete, data: { turbo_confirm: "Retirer ce conducteur ?" }, class: "text-red-500 hover:text-red-700 font-bold", title: "Retirer le conducteur"
               - else
                 / Pas de conducteur
                 button.w-full.text-xs.text-gray-500.hover:text-blue-600.border.border-dashed.border-gray-300.hover:border-blue-400.rounded.px-2.py-1.transition-colors data-action="click->modal#open" data-truck-id=truck.id data-date=@selected_date type="button"
@@ -125,7 +127,7 @@
                     = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
                   .text-xs.opacity-90
                     = "#{intervention.chantier.description.to_s.first(20)}"
-                  button.absolute.top-1.right-1.text-white.hover:text-red-200.opacity-0.group-hover:opacity-100.transition-opacity data-delete-intervention=intervention.id type="button"
+                  button.absolute.top-1.right-1.text-sm.text-white.hover:text-red-900.opacity-0.group-hover:opacity-100.transition-opacity data-delete-intervention=intervention.id type="button"
                     | ×
   = render 'admin/chantiers/info_modal'
 
