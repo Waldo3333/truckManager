@@ -1,5 +1,5 @@
 / app/views/employee/schedule/index.html.slim
-.min-h-screen.bg-gray-100 class="w-[100vw]" data-controller="employee-schedule"
+.min-h-screen.bg-gray-100 class="w-[100vw]" data-controller="employee-schedule info-card"
   / Header Navigation
   .bg-white.shadow-md.sticky.top-0.z-98
     .w-full.max-w-7xl.mx-auto.px-4.py-4
@@ -132,5 +132,8 @@
       .text-center.py-8
         i.fas.fa-spinner.fa-spin.text-3xl.text-green-500
 
-/ Modal d'info chantier
-= render 'admin/chantiers/info_modal'
+  / Modal d'info chantier (version employé)
+  #chantier-info-modal.fixed.hidden.inset-0.flex.items-center.justify-center.z-99 class="bg-black/50" data-info-card-target="modal"
+    .bg-white.rounded-lg.shadow-xl.p-6.max-w-2xl.w-full.mx-4.overflow-scroll class="max-h-[90vh].relative" data-action="click->event#stopPropagation:stop"
+      #chantier-info-content data-info-card-target="content"
+        / Le contenu sera injecté ici
