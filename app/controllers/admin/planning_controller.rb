@@ -5,13 +5,20 @@ class Admin::PlanningController < ApplicationController
   def index
     @selected_date = params[:date]&.to_date || Date.today
 
+    # Charger tous les camions
     @trucks = Truck.all.order(:name)
+
+    # Précharger TOUTES les interventions du jour en une seule requête
+    @interventions_by_truck = Intervention.includes(:chantier)
+                                          .where(date: @selected_date)
+                                          .group_by(&:truck_id)
 
     # Chantiers disponibles (pas encore planifiés ce jour)
     planned_chantier_ids = Intervention.where(date: @selected_date).pluck(:chantier_id)
     @chantiers = Chantier.where.not(id: planned_chantier_ids)
                          .where("scheduled_date = ? OR scheduled_date IS NULL", @selected_date)
-
+                         .order(:name)
+                         .to_a
     # Chargement des assignations du jour
     @daily_assignments = DailyAssignment.where(date: @selected_date)
                                         .includes(:user, :truck)

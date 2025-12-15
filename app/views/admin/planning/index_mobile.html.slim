@@ -19,7 +19,7 @@
   .mobile-chantiers-section
     h2.section-title 📋 Chantiers à planifier ce jour
 
-    - if @chantiers.any?
+    - unless @chantiers.empty?
       .mobile-chantiers-list
         - @chantiers.each do |chantier|
           .mobile-chantier-card data-action="click->planning-mobile#selectChantier" data-chantier-id=chantier.id data-chantier-name=chantier.name data-chantier-duration=chantier.duration data-planning-mobile-target="chantier"
@@ -83,8 +83,9 @@
               - (7..18).each do |hour|
                 .hour-block
 
-            / Interventions
-            - truck.interventions.where(date: @selected_date).each do |intervention|
+            / Interventions de ce camion
+            - truck_interventions = @interventions_by_truck[truck.id] || []
+            - truck_interventions.each do |intervention|
               - start_hour = intervention.start_time.hour
               - start_minute = intervention.start_time.min
               - duration_minutes = intervention.duration_in_minutes

@@ -49,6 +49,27 @@ export default class extends Controller {
 			return;
 		}
 
+		// Vérifier si c'est un bouton de navigation de date
+		const dateButton = event.target.closest(
+			'button[data-action*="planning-button"]'
+		);
+
+		if (dateButton) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			if (
+				confirm(
+					"Vous avez des modifications non sauvegardées. Voulez-vous vraiment changer de jour ?"
+				)
+			) {
+				this.cleanupWarnings();
+				dateButton.click(); // Simple reload qui va changer de date
+			}
+			return;
+		}
+
+		// Vérifier les liens normaux
 		const link = event.target.closest("a[href], button[data-turbo-method]");
 
 		if (link) {

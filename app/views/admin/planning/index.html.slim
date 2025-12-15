@@ -41,7 +41,7 @@
       .bg-white.rounded-lg.shadow.p-4.sticky style="top: 20px;"
         h2.text-lg.font-bold.mb-4 Chantiers à planifier
 
-        - if @chantiers.any?
+        - unless @chantiers.empty?
           .space-y-2 data-chantiers-list="true"
             - @chantiers.each do |chantier|
               .bg-gray-50.border.border-gray-300.rounded.p-3.cursor-move data-chantier-id=chantier.id data-chantier-duration=chantier.duration data-chantier-name=chantier.name
@@ -107,7 +107,8 @@
                 .absolute.border-l.border-gray-200 style="left: #{index * 60}px; top: 0; bottom: 0; width: 60px;"
 
               / Interventions de ce camion
-              - truck.interventions.where(date: @selected_date).each do |intervention|
+              - truck_interventions = @interventions_by_truck[truck.id] || []
+              - truck_interventions.each do |intervention|
                 - start_hour = intervention.start_time.hour
                 - start_minute = intervention.start_time.min
                 - duration_minutes = intervention.duration_in_minutes

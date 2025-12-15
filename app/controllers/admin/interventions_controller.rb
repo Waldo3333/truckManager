@@ -28,6 +28,31 @@ class Admin::InterventionsController < ApplicationController
 
   def batch_update
     ActiveRecord::Base.transaction do
+      # Précharger toutes les interventions à modifier en une seule requête
+      intervention_ids = params[:updates]&.map { |u| u[:id] } || []
+      interventions_hash = Intervention.where(id: intervention_ids).index_by(&:id)
+
+      # Modifications
+      params[:updates]&.each do |update_params|
+        intervention = interventions_hash[update_params[:id].to_i]
+
+        unless intervention
+          render json: { success: false, error: "Intervention #{update_params[:id]} introuvable" }
+          raise ActiveRecord::Rollback
+          return
+        end
+
+        unless intervention.update(
+          truck_id: update_params[:truck_id],
+          date: update_params[:date],
+          start_time: update_params[:start_time]
+        )
+          render json: { success: false, error: intervention.errors.full_messages.join(', ') }
+          raise ActiveRecord::Rollback
+          return
+        end
+      end
+
       # Créations
       params[:creates]&.each do |create_params|
         intervention = Intervention.new(
@@ -44,27 +69,12 @@ class Admin::InterventionsController < ApplicationController
         end
       end
 
-      # Modifications
-      params[:updates]&.each do |update_params|
-        intervention = Intervention.find(update_params[:id])
+      # Suppressions en batch
+      if params[:deletes]&.any?
+        deleted_count = Intervention.where(id: params[:deletes]).destroy_all.count
 
-        unless intervention.update(
-          truck_id: update_params[:truck_id],
-          date: update_params[:date],
-          start_time: update_params[:start_time]
-        )
-          render json: { success: false, error: intervention.errors.full_messages.join(', ') }
-          raise ActiveRecord::Rollback
-          return
-        end
-      end
-
-      # Suppressions
-      params[:deletes]&.each do |intervention_id|
-        intervention = Intervention.find(intervention_id)
-
-        unless intervention.destroy
-          render json: { success: false, error: "Impossible de supprimer l'intervention" }
+        if deleted_count != params[:deletes].length
+          render json: { success: false, error: "Certaines interventions n'ont pas pu être supprimées" }
           raise ActiveRecord::Rollback
           return
         end
@@ -72,8 +82,8 @@ class Admin::InterventionsController < ApplicationController
 
       render json: { success: true, message: "Toutes les modifications ont été sauvegardées" }
     end
-  rescue => e
-    render json: { success: false, error: e.message }
+    rescue => e
+      render json: { success: false, error: e.message }
   end
 
   private
