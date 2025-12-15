@@ -51,18 +51,11 @@ export default class extends Controller {
 			modal.classList.remove("opacity-0", "pointer-events-none");
 			modal.classList.add("opacity-100", "pointer-events-auto");
 
-			// Détecter si on est admin ou employé
-			const pathname = window.location.pathname;
-			console.log("🔍 Current pathname:", pathname);
-
-			const isEmployee = pathname.includes("/employee");
-			console.log("🔍 Is employee?", isEmployee);
-
+			// Détecter si on est admin ou employé basé sur l'URL
+			const isEmployee = window.location.pathname.startsWith("/employee");
 			const url = isEmployee
 				? `/employee/chantiers/${chantierId}`
 				: `/admin/chantiers/${chantierId}`;
-
-			console.log("🔍 Fetching URL:", url);
 
 			const response = await fetch(url, {
 				headers: {

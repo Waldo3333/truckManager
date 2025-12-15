@@ -4,8 +4,6 @@ class Employee::ChantiersController < ApplicationController
 
   def show
     @chantier = Chantier.find(params[:id])
-
-    # Test 1 : Vérifier que l'action est bien appelée
-    render plain: "ACTION SHOW APPELÉE - Chantier: #{@chantier.name}"
+    render partial: 'chantier_info', locals: { chantier: @chantier }, layout: false
   end
 end
