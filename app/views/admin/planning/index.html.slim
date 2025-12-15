@@ -1,6 +1,21 @@
 / app/views/admin/planning/index.html.slim
 .container-fluid.px-4.py-8 data-controller="planning planning-button modal info-card"
   h1.text-3xl.font-bold.mb-6 Planning des interventions
+  / Boutons de sauvegarde (sticky en haut quand des modifications sont présentes)
+  .fixed.right-3.top-4.z-40.flex.justify-end.hidden data-planning-target="saveButton"
+    .bg-white.rounded-lg.shadow-xl.border-2.border-orange-400.p-2.flex.items-center.gap-4
+      .flex.flex-col.items-center.gap-2
+        .flex.items-center.gap-2
+          .bg-orange-100.text-orange-800.px-3.py-1.rounded-full.font-bold.text-sm
+            span Modifications non sauvegardées :
+            span data-planning-target="pendingCount" 0
+        .flex.gap-2
+          button.bg-green-500.text-white.px-6.py-3.rounded-lg.hover:bg-green-600.shadow-lg.flex.items-center.gap-2.font-medium data-action="click->planning#saveAllChanges" type="button"
+            span 💾
+            span Sauvegarder
+          button.bg-gray-500.text-white.px-4.py-3.rounded-lg.hover:bg-gray-600.shadow-lg.flex.items-center.gap-2.font-medium data-action="click->planning#cancelAllChanges" type="button"
+            span ↺
+            span Annuler
 
   / Sélecteur de date
   .flex.justify-center.bg-white.rounded-lg.shadow.p-4.mb-6.gap-4
@@ -18,6 +33,7 @@
         .flex.items-center.gap-2.bg-green-300.p-2.rounded-2xl.justify-end.w-max
           p Suivant
           i.fas.fa-chevron-right.text-gray-600
+
   / Layout : Sidebar + Timeline
   .flex.gap-6
     / Sidebar gauche : Chantiers à planifier
@@ -25,7 +41,7 @@
       .bg-white.rounded-lg.shadow.p-4.sticky style="top: 20px;"
         h2.text-lg.font-bold.mb-4 Chantiers à planifier
 
-        - if @chantiers.any?
+        - unless @chantiers.empty?
           .space-y-2 data-chantiers-list="true"
             - @chantiers.each do |chantier|
               .bg-gray-50.border.border-gray-300.rounded.p-3.cursor-move data-chantier-id=chantier.id data-chantier-duration=chantier.duration data-chantier-name=chantier.name
@@ -77,8 +93,10 @@
                   .flex.items-center.gap-1
                     span.text-xs 👤
                     span.text-xs.font-medium = assignment.user.email.split('@').first
-                  button.text-blue-500.hover:text-blue-700.text-xs data-action="click->modal#open" data-truck-id=truck.id data-date=@selected_date data-assignment-id=assignment.id type="button"
-                    | ✎
+                  .flex.gap-1
+                    button.text-blue-500.hover:text-blue-700 data-action="click->modal#open" data-truck-id=truck.id data-date=@selected_date data-assignment-id=assignment.id type="button" title="Modifier l'assignation"
+                      | ✎
+                    = button_to "×", admin_daily_assignment_path(assignment), method: :delete, data: { turbo_confirm: "Retirer ce conducteur ?" }, class: "text-red-500 hover:text-red-700 font-bold", title: "Retirer le conducteur"
               - else
                 / Pas de conducteur
                 button.w-full.text-xs.text-gray-500.hover:text-blue-600.border.border-dashed.border-gray-300.hover:border-blue-400.rounded.px-2.py-1.transition-colors data-action="click->modal#open" data-truck-id=truck.id data-date=@selected_date type="button"
@@ -91,7 +109,8 @@
                 .absolute.border-l.border-gray-200 style="left: #{index * 60}px; top: 0; bottom: 0; width: 60px;"
 
               / Interventions de ce camion
-              - truck.interventions.where(date: @selected_date).each do |intervention|
+              - truck_interventions = @interventions_by_truck[truck.id] || []
+              - truck_interventions.each do |intervention|
                 - start_hour = intervention.start_time.hour
                 - start_minute = intervention.start_time.min
                 - duration_minutes = intervention.duration_in_minutes
@@ -108,7 +127,7 @@
                     = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
                   .text-xs.opacity-90
                     = "#{intervention.chantier.description.to_s.first(20)}"
-                  button.absolute.top-1.right-1.text-white.hover:text-red-200.opacity-0.group-hover:opacity-100.transition-opacity data-delete-intervention=intervention.id type="button"
+                  button.absolute.top-1.right-1.text-sm.text-white.hover:text-red-900.opacity-0.group-hover:opacity-100.transition-opacity data-delete-intervention=intervention.id type="button"
                     | ×
   = render 'admin/chantiers/info_modal'
 
