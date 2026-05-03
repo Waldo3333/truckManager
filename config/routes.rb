@@ -23,7 +23,12 @@ Rails.application.routes.draw do
     resources :trucks
     resources :users
     resources :daily_assignments, only: [:create, :update, :destroy]
-    resources :interventions, only: [:create, :update, :destroy]
+
+    resources :interventions, only: [:create, :update, :destroy] do
+      collection do
+        post :batch_update
+      end
+    end
   end
 
   # ROUTES EMPLOYÉS

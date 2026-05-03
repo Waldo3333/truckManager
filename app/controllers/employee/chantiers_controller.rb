@@ -4,6 +4,6 @@ class Employee::ChantiersController < ApplicationController
 
   def show
     @chantier = Chantier.find(params[:id])
-    render partial: 'admin/chantiers/info', locals: { chantier: @chantier }, layout: false
+    render partial: 'chantier_info', locals: { chantier: @chantier }, layout: false
   end
 end
