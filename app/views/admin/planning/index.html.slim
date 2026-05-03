@@ -34,7 +34,15 @@
         .flex.items-center.gap-2.bg-green-300.p-2.rounded-2xl.justify-end.w-max
           p Suivant
           i.fas.fa-chevron-right.text-gray-600
+    / Bouton Vue globale
+    .flex.justify-center.mb-6
+      - all_interventions_data = @trucks.map do |truck|
+        - truck_interventions = truck.interventions.where(date: @selected_date).includes(:chantier).order(:start_time).select { |i| i.chantier.latitude.present? && i.chantier.longitude.present? }
+        - { name: truck.name, interventions: truck_interventions.map { |intervention| { name: intervention.chantier.name, location: intervention.chantier.location, latitude: intervention.chantier.latitude, longitude: intervention.chantier.longitude, start_time: intervention.start_time.strftime('%H:%M'), end_time: intervention.end_time.strftime('%H:%M'), duration: intervention.duration_in_minutes } } }
 
+      button.bg-blue-500.text-white.px-6.py-3.rounded-lg.hover:bg-blue-600.shadow-lg.flex.items-center.gap-2.font-medium data-controller="global-day-map" data-global-day-map-trucks-value=all_interventions_data.to_json data-action="click->global-day-map#openMap" type="button"
+        span 🗺️
+        span Vue globale de la journée
 
   / Layout : Sidebar + Timeline
   .flex.gap-6
