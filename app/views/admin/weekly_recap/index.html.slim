@@ -37,9 +37,11 @@
         p cette semaine
     / Navigation Camion
     - if @current_truck
+      - current_index = @trucks.index(@current_truck)
+      - prev_truck = @trucks[current_index - 1] || @trucks.last
+      - next_truck = @trucks[current_index + 1] || @trucks.first
       .bg-green-400.rounded-lg.shadow.p-4.mb-6.flex.justify-around.items-center
         .flex.items-center.justify-between.gap-4
-          - prev_truck = @trucks.where("id < ?", @current_truck.id).last || @trucks.last
           = link_to admin_weekly_recap_path(week: @selected_week, truck_id: prev_truck.id), class: "px-4 py-2 bg-green-200 hover:bg-green-300 rounded flex items-center gap-2" do
             i.fas.fa-chevron-left
             span Camion précédent
@@ -47,8 +49,6 @@
           .text-center
             .text-xl.font-bold = @current_truck.name
 
-
-          - next_truck = @trucks.where("id > ?", @current_truck.id).first || @trucks.first
           = link_to admin_weekly_recap_path(week: @selected_week, truck_id: next_truck.id), class: "px-4 py-2 bg-green-200 hover:bg-green-300 rounded flex items-center gap-2" do
             span Camion suivant
             i.fas.fa-chevron-right
