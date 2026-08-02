@@ -11,6 +11,11 @@ export default class extends Controller {
 			deletes: [],
 		};
 
+		this.startHour = parseInt(this.element.dataset.planningStartHour, 10) || 7;
+		this.endHour = parseInt(this.element.dataset.planningEndHour, 10) || 21;
+		this.totalMinutes = (this.endHour - this.startHour) * 60;
+		this.snapMinutes = 15;
+
 		this.initializeSortable();
 		this.updateSaveButton();
 		this.setupNavigationWarning();
@@ -260,20 +265,19 @@ export default class extends Controller {
 			relativeX = itemRect.left - timelineRect.left;
 		}
 
-		const totalMinutesFrom7am = Math.max(0, Math.round(relativeX));
-		const roundedMinutes = Math.round(totalMinutesFrom7am / 15) * 15;
+		// px → minutes, proportionnellement à la largeur réelle de la piste
+		const rawMinutes = (relativeX / timelineRect.width) * this.totalMinutes;
 
-		const hours = Math.floor(roundedMinutes / 60);
-		const minutes = roundedMinutes % 60;
+		// Empêcher l'intervention de déborder à droite
+		const duration = parseInt(item.dataset.chantierDuration, 10) || 0;
+		const maxStart = Math.max(0, this.totalMinutes - duration);
+		const clamped = Math.min(Math.max(0, rawMinutes), maxStart);
 
-		const startHour = 7 + hours;
-		const startMinute = minutes;
+		const roundedMinutes =
+			Math.round(clamped / this.snapMinutes) * this.snapMinutes;
 
-		if (startHour < 7 || startHour >= 21) {
-			alert("Vous devez placer l'intervention entre 7h et 18h");
-			item.remove();
-			return;
-		}
+		const startHour = this.startHour + Math.floor(roundedMinutes / 60);
+		const startMinute = roundedMinutes % 60;
 
 		const startTime = `${String(startHour).padStart(2, "0")}:${String(startMinute).padStart(2, "0")}`;
 
@@ -282,8 +286,7 @@ export default class extends Controller {
 			this.addPendingUpdate(interventionId, truckId, date, startTime, item);
 
 			item.classList.add("pending-change");
-			const leftOffset = roundedMinutes;
-			item.style.left = `${leftOffset}px`;
+			item.style.left = `${((roundedMinutes / this.totalMinutes) * 100).toFixed(4)}%`;
 			const originalBorder = item.style.border;
 			item.style.border = "2px dashed #f59e0b";
 			item.style.boxShadow = "0 0 10px rgba(245, 158, 11, 0.5)";
