@@ -52,7 +52,7 @@ export default class extends Controller {
 			event.preventDefault();
 			event.stopPropagation();
 			alert(
-				"⚠️ Veuillez d'abord sauvegarder vos modifications d'interventions avant d'assigner un conducteur."
+				"⚠️ Veuillez d'abord sauvegarder vos modifications d'interventions avant d'assigner un conducteur.",
 			);
 			return;
 		}
@@ -63,7 +63,7 @@ export default class extends Controller {
 
 		// Vérifier si c'est un bouton de navigation de date
 		const dateButton = event.target.closest(
-			'button[data-action*="planning-button"]'
+			'button[data-action*="planning-button"]',
 		);
 
 		if (dateButton) {
@@ -72,7 +72,7 @@ export default class extends Controller {
 
 			if (
 				confirm(
-					"Vous avez des modifications non sauvegardées. Voulez-vous vraiment changer de jour ?"
+					"Vous avez des modifications non sauvegardées. Voulez-vous vraiment changer de jour ?",
 				)
 			) {
 				this.cleanupWarnings();
@@ -95,7 +95,7 @@ export default class extends Controller {
 
 			if (
 				confirm(
-					"Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter cette page ?"
+					"Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter cette page ?",
 				)
 			) {
 				this.cleanupWarnings();
@@ -124,7 +124,7 @@ export default class extends Controller {
 				event.preventDefault();
 				event.stopPropagation();
 				alert(
-					"⚠️ Veuillez d'abord sauvegarder vos modifications d'interventions avant de modifier les assignations."
+					"⚠️ Veuillez d'abord sauvegarder vos modifications d'interventions avant de modifier les assignations.",
 				);
 				return;
 			}
@@ -146,7 +146,7 @@ export default class extends Controller {
 
 		if (
 			confirm(
-				"Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter cette page ?"
+				"Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter cette page ?",
 			)
 		) {
 			this.cleanupWarnings();
@@ -269,7 +269,7 @@ export default class extends Controller {
 		const startHour = 7 + hours;
 		const startMinute = minutes;
 
-		if (startHour < 7 || startHour >= 19) {
+		if (startHour < 7 || startHour >= 21) {
 			alert("Vous devez placer l'intervention entre 7h et 18h");
 			item.remove();
 			return;
@@ -316,7 +316,7 @@ export default class extends Controller {
 
 	addPendingUpdate(interventionId, truckId, date, startTime, itemElement) {
 		const existingIndex = this.pendingChanges.updates.findIndex(
-			(u) => u.id === interventionId
+			(u) => u.id === interventionId,
 		);
 
 		const updateData = {
@@ -338,7 +338,7 @@ export default class extends Controller {
 	deletePendingIntervention(interventionId) {
 		// Trouver l'élément dans le DOM
 		const element = this.element.querySelector(
-			`[data-intervention-id="${interventionId}"]`
+			`[data-intervention-id="${interventionId}"]`,
 		);
 
 		if (element) {
@@ -350,7 +350,7 @@ export default class extends Controller {
 		this.pendingChanges.deletes.push(interventionId);
 		console.log(
 			"🗑️ Suppression ajoutée aux pending:",
-			this.pendingChanges.deletes
+			this.pendingChanges.deletes,
 		);
 
 		// Sauvegarder immédiatement (avec toutes les modifs pending)
@@ -389,14 +389,14 @@ export default class extends Controller {
 		// Tous les boutons d'assignation (+ Assigner, ✎, et ×)
 		const assignButtons = this.element.querySelectorAll(
 			'[data-action*="modal#open"], ' +
-				'form[action*="daily_assignments"] button[type="submit"]'
+				'form[action*="daily_assignments"] button[type="submit"]',
 		);
 
 		assignButtons.forEach((button) => {
 			button.classList.add(
 				"opacity-50",
 				"cursor-not-allowed",
-				"assignment-blocked"
+				"assignment-blocked",
 			);
 			button.dataset.blocked = "true";
 
@@ -409,14 +409,14 @@ export default class extends Controller {
 	enableAssignmentButtons() {
 		const assignButtons = this.element.querySelectorAll(
 			'[data-action*="modal#open"], ' +
-				'form[action*="daily_assignments"] button[type="submit"]'
+				'form[action*="daily_assignments"] button[type="submit"]',
 		);
 
 		assignButtons.forEach((button) => {
 			button.classList.remove(
 				"opacity-50",
 				"cursor-not-allowed",
-				"assignment-blocked"
+				"assignment-blocked",
 			);
 			button.dataset.blocked = "false";
 
@@ -478,7 +478,7 @@ export default class extends Controller {
 	cancelAllChanges() {
 		if (
 			confirm(
-				"Annuler toutes les modifications non sauvegardées ? Cette action rechargera la page."
+				"Annuler toutes les modifications non sauvegardées ? Cette action rechargera la page.",
 			)
 		) {
 			this.cleanupWarnings();

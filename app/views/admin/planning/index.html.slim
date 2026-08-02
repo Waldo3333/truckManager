@@ -74,7 +74,7 @@
           .w-48.flex-shrink-0
             / Espace vide pour aligner avec les noms de camions + conducteurs
           .flex-1.flex
-            - (7..18).each do |hour|
+            - (7..20).each do |hour|
               .flex-1.text-center.text-xs.font-medium.text-gray-600.border-l.border-gray-200 style="min-width: 60px;"
                 = "#{hour}h"
 
@@ -103,9 +103,9 @@
                   | + Assigner
 
             / Timeline des cards camions
-            .flex-1.relative data-truck-timeline="true" data-truck-id=truck.id data-date=@selected_date style="min-width: 660px;"
+            .flex-1.relative data-truck-timeline="true" data-truck-id=truck.id data-date=@selected_date style="min-width: 780px;"
               / Grille des heures (lignes verticales)
-              - (7..18).each_with_index do |hour, index|
+              - (7..20).each_with_index do |hour, index|
                 .absolute.border-l.border-gray-200 style="left: #{index * 60}px; top: 0; bottom: 0; width: 60px;"
 
               / Interventions de ce camion

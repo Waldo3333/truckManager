@@ -55,7 +55,7 @@
     .mobile-timeline-container
       / Échelle des heures
       .mobile-hours-scale
-        - (7..18).each do |hour|
+        - (7..19).each do |hour|
           .hour-mark = "#{hour}h"
 
       / Camions avec interventions
@@ -80,7 +80,7 @@
           .truck-timeline data-truck-id=truck.id
             / Grille horaire
             .timeline-grid
-              - (7..18).each do |hour|
+              - (7..20).each do |hour|
                 .hour-block
 
             / Interventions de ce camion
@@ -89,8 +89,8 @@
               - start_hour = intervention.start_time.hour
               - start_minute = intervention.start_time.min
               - duration_minutes = intervention.duration_in_minutes
-              - left_percent = ((start_hour - 7) * 60 + start_minute) / 660.0 * 100
-              - width_percent = duration_minutes / 660.0 * 100
+              - left_percent = ((start_hour - 7) * 60 + start_minute) / 780.0 * 100
+              - width_percent = duration_minutes / 780.0 * 100
 
               .mobile-intervention class=(intervention.chantier.two_operators ? "two-operators" : "") style="left: #{left_percent}%; width: #{width_percent}%;" data-action="click->planning-mobile#moveIntervention" data-intervention-id=intervention.id data-chantier-id=intervention.chantier_id data-chantier-name=intervention.chantier.name data-chantier-duration=intervention.chantier.duration data-current-truck-id=truck.id
                 .intervention-name = intervention.chantier.name.truncate(15)
@@ -135,7 +135,7 @@
           / Rempli dynamiquement
 
         .time-slots-grid
-          - (7..18).each do |hour|
+          - (7..20).each do |hour|
             - [0, 15, 30, 45].each do |minutes|
               - time_string = sprintf("%02d:%02d", hour, minutes)
               .time-slot data-action="click->planning-mobile#selectTime" data-time=time_string
