@@ -49,7 +49,11 @@
           .space-y-2 data-chantiers-list="true"
             - @chantiers.each do |chantier|
               .bg-gray-50.border.border-gray-300.rounded.p-3.cursor-move data-chantier-id=chantier.id data-chantier-duration=chantier.duration data-chantier-name=chantier.name
-                .font-medium.text-sm = chantier.name
+                .font-medium.text-sm.flex.items-center.gap-1
+                  = chantier.name
+                  - if chantier.copy?
+                    span.text-orange-400.text-xs title="Copie d'un chantier"
+                      i class="fa-solid fa-copy"
                 .text-xs.text-gray-500 = chantier.location
                 .text-xs.text-blue-600.mt-1
                   = "📏 #{chantier.duration} min (#{chantier.duration_in_hours}h)"

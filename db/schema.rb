@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_20_101532) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_02_112435) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -26,6 +26,34 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_20_101532) do
     t.text "description"
     t.boolean "extra_equipment", default: false
     t.boolean "two_operators", default: false
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.bigint "company_id"
+    t.bigint "client_id"
+    t.boolean "copy", default: false, null: false
+    t.integer "original_id"
+    t.index ["client_id"], name: "index_chantiers_on_client_id"
+    t.index ["company_id"], name: "index_chantiers_on_company_id"
+  end
+
+  create_table "clients", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email"
+    t.string "phone"
+    t.string "location"
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.bigint "company_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_clients_on_company_id"
+  end
+
+  create_table "companies", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "daily_assignments", force: :cascade do |t|
@@ -55,6 +83,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_20_101532) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name"
+    t.bigint "company_id"
+    t.index ["company_id"], name: "index_trucks_on_company_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -66,12 +96,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_20_101532) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "admin", default: false
+    t.bigint "company_id"
+    t.boolean "superadmin", default: false, null: false
+    t.index ["company_id"], name: "index_users_on_company_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "chantiers", "clients"
+  add_foreign_key "chantiers", "companies"
+  add_foreign_key "clients", "companies"
   add_foreign_key "daily_assignments", "trucks"
   add_foreign_key "daily_assignments", "users"
   add_foreign_key "interventions", "chantiers"
   add_foreign_key "interventions", "trucks"
+  add_foreign_key "trucks", "companies"
+  add_foreign_key "users", "companies"
 end
