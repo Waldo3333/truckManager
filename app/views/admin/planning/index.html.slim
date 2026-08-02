@@ -42,33 +42,36 @@
   .flex.gap-6
     / Sidebar gauche : Chantiers à planifier
     .w-80.flex-shrink-0
-      .bg-white.rounded-lg.shadow.p-4.sticky style="top: 20px; max-height: calc(100vh - 120px); overflow-y: auto;"
-        h2.text-lg.font-bold.mb-4 Chantiers à planifier
+      .bg-white.rounded-lg.shadow.sticky style="top: 20px; max-height: calc(100vh - 120px); display: flex; flex-direction: column;"
+        .p-4.border-b.border-gray-200.flex-shrink-0
+          h2.text-lg.font-bold.mb-4 Chantiers à planifier
 
-        - unless @chantiers.empty?
-          .space-y-2 data-chantiers-list="true"
-            - @chantiers.each do |chantier|
-              .bg-gray-50.border.border-gray-300.rounded.p-3.cursor-move data-chantier-id=chantier.id data-chantier-duration=chantier.duration data-chantier-name=chantier.name
-                .font-medium.text-sm = chantier.name
-                .text-xs.text-gray-500 = chantier.location
-                .text-xs.text-blue-600.mt-1
-                  = "📏 #{chantier.duration} min (#{chantier.duration_in_hours}h)"
-                - if chantier.scheduled_date.present?
-                  .text-xs.text-green-600.mt-1 = "📅 #{l(chantier.scheduled_date, format: :long)}"
-                - else
-                  .text-xs.text-gray-400.italic.mt-1 Aucune date prévue
-                .text-xs.text-gray-500
+        .p-4.overflow-y-auto.flex-1
 
-                .flex.mt-2.items-center.gap-2
-                  - if chantier.extra_equipment || chantier.two_operators
-                    p.text-xs ⚠️
-                  - if chantier.extra_equipment
-                    i class="fa-solid fa-screwdriver-wrench text-xs text-black opacity-90"
-                  - if chantier.two_operators
-                    i class="fa-solid fa-people-arrows text-xs text-black"
+          - unless @chantiers.empty?
+            .space-y-2 data-chantiers-list="true"
+              - @chantiers.each do |chantier|
+                .bg-gray-50.border.border-gray-300.rounded.p-3.cursor-move data-chantier-id=chantier.id data-chantier-duration=chantier.duration data-chantier-name=chantier.name
+                  .font-medium.text-sm = chantier.name
+                  .text-xs.text-gray-500 = chantier.location
+                  .text-xs.text-blue-600.mt-1
+                    = "📏 #{chantier.duration} min (#{chantier.duration_in_hours}h)"
+                  - if chantier.scheduled_date.present?
+                    .text-xs.text-green-600.mt-1 = "📅 #{l(chantier.scheduled_date, format: :long)}"
+                  - else
+                    .text-xs.text-gray-400.italic.mt-1 Aucune date prévue
+                  .text-xs.text-gray-500
 
-        - else
-          p.text-gray-500.text-sm.italic Aucun chantier disponible
+                  .flex.mt-2.items-center.gap-2
+                    - if chantier.extra_equipment || chantier.two_operators
+                      p.text-xs ⚠️
+                    - if chantier.extra_equipment
+                      i class="fa-solid fa-screwdriver-wrench text-xs text-black opacity-90"
+                    - if chantier.two_operators
+                      i class="fa-solid fa-people-arrows text-xs text-black"
+
+          - else
+            p.text-gray-500.text-sm.italic Aucun chantier disponible
 
     / Timeline principale
     .flex-1.overflow-x-auto.min-w-0
