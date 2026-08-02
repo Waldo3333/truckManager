@@ -42,7 +42,7 @@
   .flex.gap-6
     / Sidebar gauche : Chantiers à planifier
     .w-80.flex-shrink-0
-      .bg-white.rounded-lg.shadow.p-4.sticky style="top: 20px;"
+      .bg-white.rounded-lg.shadow.p-4.sticky style="top: 20px; max-height: calc(100vh - 120px); overflow-y: auto;"
         h2.text-lg.font-bold.mb-4 Chantiers à planifier
 
         - unless @chantiers.empty?
