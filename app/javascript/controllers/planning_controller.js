@@ -270,7 +270,7 @@ export default class extends Controller {
 
 		// Empêcher l'intervention de déborder à droite
 		const duration = parseInt(item.dataset.chantierDuration, 10) || 0;
-		const maxStart = Math.max(0, this.totalMinutes - duration);
+		const maxStart = this.totalMinutes - this.snapMinutes;
 		const clamped = Math.min(Math.max(0, rawMinutes), maxStart);
 
 		const roundedMinutes =
