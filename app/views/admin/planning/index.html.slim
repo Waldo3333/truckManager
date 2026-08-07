@@ -44,15 +44,20 @@
     .w-80.flex-shrink-0
       .bg-white.rounded-lg.shadow.sticky style="top: 20px; max-height: calc(100vh - 120px); display: flex; flex-direction: column;"
         .p-4.border-b.border-gray-200.flex-shrink-0
-          h2.text-lg.font-bold.mb-4 Chantiers à planifier
+          h2.text-lg.font-bold Chantiers à planifier
 
         .p-4.overflow-y-auto.flex-1
-
-          - unless @chantiers.empty?
+          - if @chantiers.empty?
+            p.text-gray-500.text-sm.italic Aucun chantier disponible
+          - else
             .space-y-2 data-chantiers-list="true"
               - @chantiers.each do |chantier|
                 .bg-gray-50.border.border-gray-300.rounded.p-3.cursor-move data-chantier-id=chantier.id data-chantier-duration=chantier.duration data-chantier-name=chantier.name
-                  .font-medium.text-sm = chantier.name
+                  .font-medium.text-sm.flex.items-center.gap-1
+                    = chantier.name
+                    - if chantier.copy?
+                      span.text-orange-400.text-xs title="Copie d'un chantier"
+                        i class="fa-solid fa-copy"
                   .text-xs.text-gray-500 = chantier.location
                   .text-xs.text-blue-600.mt-1
                     = "📏 #{chantier.duration} min (#{chantier.duration_in_hours}h)"
@@ -60,8 +65,6 @@
                     .text-xs.text-green-600.mt-1 = "📅 #{l(chantier.scheduled_date, format: :long)}"
                   - else
                     .text-xs.text-gray-400.italic.mt-1 Aucune date prévue
-                  .text-xs.text-gray-500
-
                   .flex.mt-2.items-center.gap-2
                     - if chantier.extra_equipment || chantier.two_operators
                       p.text-xs ⚠️
@@ -69,9 +72,6 @@
                       i class="fa-solid fa-screwdriver-wrench text-xs text-black opacity-90"
                     - if chantier.two_operators
                       i class="fa-solid fa-people-arrows text-xs text-black"
-
-          - else
-            p.text-gray-500.text-sm.italic Aucun chantier disponible
 
     / Timeline principale
     .flex-1.overflow-x-auto.min-w-0

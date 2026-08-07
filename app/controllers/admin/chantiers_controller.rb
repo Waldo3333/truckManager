@@ -1,7 +1,6 @@
-# app/controllers/admin/chantiers_controller.rb
 class Admin::ChantiersController < ApplicationController
   before_action :require_admin
-  before_action :set_chantier, only: [:edit, :show, :update, :destroy]
+  before_action :set_chantier, only: [:edit, :show, :update, :destroy, :duplicate]
 
 
   def index
@@ -13,7 +12,6 @@ class Admin::ChantiersController < ApplicationController
   end
 
   def show
-    # Render juste la partial pour AJAX
     render partial: 'admin/chantiers/info', locals: { chantier: @chantier }, layout: false
   end
 
@@ -23,7 +21,6 @@ class Admin::ChantiersController < ApplicationController
 
   def create
     @chantier = Chantier.new(chantier_params)
-
     if @chantier.save
       redirect_to admin_chantiers_path, notice: "Chantier créé avec succès"
     else
@@ -45,6 +42,11 @@ class Admin::ChantiersController < ApplicationController
   def destroy
     @chantier.destroy
     redirect_to admin_chantiers_path, notice: "Chantier supprimé"
+  end
+
+  def duplicate
+    @chantier.duplicate!
+    redirect_to admin_chantiers_path, notice: "Chantier dupliqué"
   end
 
   private
