@@ -11,7 +11,7 @@ class Admin::DashboardController < ApplicationController
     @week_start = Date.today.beginning_of_week
     @week_end = Date.today.end_of_week
     @chantiers_a_planifier = Chantier.left_joins(:interventions).where(interventions: { id: nil }).count
-    @chantiers_planifies = base.joins(:interventions).where("interventions.date >= ?", Date.today).distinct
+@chantiers_planifies = Chantier.joins(:interventions).where("interventions.date >= ?", Date.today).distinct.count
 
   end
 end
