@@ -13,12 +13,14 @@ class Admin::PlanningController < ApplicationController
                                           .where(date: @selected_date)
                                           .group_by(&:truck_id)
 
-    # Chantiers disponibles (pas encore planifiés ce jour)
+    # Chantiers disponibles (pas encore planifiés ce jour ET sans intervention existante ailleurs)
     planned_chantier_ids = Intervention.where(date: @selected_date).pluck(:chantier_id)
-    @chantiers = Chantier.where.not(id: planned_chantier_ids)
-                         .where("scheduled_date = ? OR scheduled_date IS NULL", @selected_date)
-                         .order(:name)
-                         .to_a
+    already_intervened_ids = Intervention.pluck(:chantier_id).uniq
+
+    @chantiers = Chantier.where.not(id: (planned_chantier_ids + already_intervened_ids).uniq)
+                        .where("scheduled_date = ? OR scheduled_date IS NULL", @selected_date)
+                        .order(:name)
+                        .to_a
     # Chargement des assignations du jour
     @daily_assignments = DailyAssignment.where(date: @selected_date)
                                         .includes(:user, :truck)

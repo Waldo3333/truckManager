@@ -4,55 +4,57 @@
     h1.text-3xl.font-bold Gestion des chantiers
     = link_to "➕ Nouveau chantier", new_admin_chantier_path, class: "bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600"
 
-  .bg-white.rounded-lg.shadow.overflow-hidden.md:block.hidden
-    table.min-w-full.divide-y.divide-gray-200
-      thead.bg-gray-50
-        tr
-          th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase Nom
-          th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase Lieu
-          th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase Durée (minutes)
-          th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase Prévu le
-          th.px-6.py-3.text-right.text-xs.font-medium.text-gray-500.uppercase Actions
-      tbody.bg-white.divide-y.divide-gray-200
-        - @chantiers.each do |chantier|
-          tr
-            td.px-6.py-4.whitespace-nowrap.font-medium = chantier.name
-            td.px-6.py-4.whitespace-nowrap = chantier.location
-            td.px-6.py-4.whitespace-nowrap
-              = "#{chantier.duration} min"
-              span.text-gray-500.text-sm = " (#{chantier.duration_in_hours}h)"
-            td.px-6.py-4.whitespace-nowrap.text-sm.text-gray-500
-              = chantier.scheduled_date&.strftime("%d/%m/%Y") || content_tag(:span, "Aucune date prévue", class: "text-gray-400 italic")
-            td.px-6.py-4.whitespace-nowrap.text-right.text-sm.font-medium
-              = link_to "Modifier", edit_admin_chantier_path(chantier), class: "text-blue-600 hover:text-blue-900 mr-4"
-              = button_to "Supprimer", admin_chantier_path(chantier), method: :delete, data: { turbo_confirm: "Êtes-vous sûr ?" }, class: "text-red-600 hover:text-red-900"
+  / Onglets
+  .flex.border-b.border-gray-200.mb-4
+    button.tab-btn.px-4.py-2.text-sm.font-medium.border-b-2.border-green-500.text-green-600.cursor-pointer data-tab="non-programmes" type="button"
+      = "Non programmés (#{@chantiers_non_programmes.count})"
+    button.tab-btn.px-4.py-2.text-sm.font-medium.border-b-2.border-transparent.text-gray-500.cursor-pointer.hover:text-gray-700 data-tab="programmes" type="button"
+      = "Programmés (#{@chantiers_programmes.count})"
+    button.tab-btn.px-4.py-2.text-sm.font-medium.border-b-2.border-transparent.text-gray-500.cursor-pointer.hover:text-gray-700 data-tab="termines" type="button"
+      = "Terminés (#{@chantiers_termines.count})"
 
-  / Version mobile (cartes)
-  .md:hidden.space-y-4
-    - @chantiers.each do |chantier|
-      .bg-white.rounded-lg.shadow.p-4.border.border-gray-200
-        .mb-3
-          h3.text-lg.font-bold.text-gray-900.mb-1 = chantier.name
-          .flex.items-center.text-sm.text-gray-600
-            span.mr-1 📍
-            = chantier.location
+  / Header colonnes
+  .hidden.md:flex.px-4.py-2.text-xs.font-medium.text-gray-500.uppercase.border-b.border-gray-200.mb-1
+    .w-1/4 Nom
+    .w-1/3 Lieu
+    .w-1/6 Durée
+    .w-1/6 Prévu le
+    .w-1/6.text-right Actions
 
-        .space-y-2.mb-4
-          .flex.justify-between.items-center
-            span.text-sm.text-gray-500 Durée
-            span.font-medium.text-gray-900
-              = "#{chantier.duration} min"
-              span.text-gray-500.text-sm.ml-1 = "(#{chantier.duration_in_hours}h)"
+  / Onglet Non programmés
+  #tab-non-programmes.tab-content
+    .bg-white.rounded-lg.shadow.overflow-hidden
+      - @chantiers_non_programmes.each do |chantier|
+        = render 'chantier_row', chantier: chantier
 
-          .flex.justify-between.items-center
-            span.text-sm.text-gray-500 Prévu le
-            - if chantier.scheduled_date
-              span.font-medium.text-gray-900 = chantier.scheduled_date.strftime("%d/%m/%Y")
-            - else
-              span.text-gray-400.italic.text-sm Aucune date prévue
+  / Onglet Programmés
+  #tab-programmes.tab-content.hidden
+    .bg-white.rounded-lg.shadow.overflow-hidden
+      - @chantiers_programmes.each do |chantier|
+        = render 'chantier_row', chantier: chantier
 
-        .flex.gap-2.pt-3.border-t.border-gray-200.justify-around
-          = link_to edit_admin_chantier_path(chantier), class: "bg-blue-500 text-white text-center py-2 px-4 rounded hover:bg-blue-600 transition" do
-            span ✏️ Modifier
-          = button_to admin_chantier_path(chantier), method: :delete, data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer ce chantier ?" }, class: "flex-1 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition" do
-            span 🗑️ Supprimer
+  / Onglet Terminés
+  #tab-termines.tab-content.hidden
+    .bg-white.rounded-lg.shadow.overflow-hidden
+      - @chantiers_termines.each do |chantier|
+        = render 'chantier_row', chantier: chantier
+
+javascript:
+  document.addEventListener('turbo:load', function() {
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        const target = tab.dataset.tab;
+        tabs.forEach(function(t) {
+          t.classList.remove('border-green-500', 'text-green-600');
+          t.classList.add('border-transparent', 'text-gray-500');
+        });
+        tab.classList.add('border-green-500', 'text-green-600');
+        tab.classList.remove('border-transparent', 'text-gray-500');
+        contents.forEach(function(c) { c.classList.add('hidden'); });
+        document.getElementById('tab-' + target).classList.remove('hidden');
+      });
+    });
+  });

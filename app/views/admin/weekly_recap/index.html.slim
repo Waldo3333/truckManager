@@ -37,9 +37,11 @@
         p cette semaine
     / Navigation Camion
     - if @current_truck
+      - current_index = @trucks.index(@current_truck)
+      - prev_truck = @trucks[current_index - 1] || @trucks.last
+      - next_truck = @trucks[current_index + 1] || @trucks.first
       .bg-green-400.rounded-lg.shadow.p-4.mb-6.flex.justify-around.items-center
         .flex.items-center.justify-between.gap-4
-          - prev_truck = @trucks.where("id < ?", @current_truck.id).last || @trucks.last
           = link_to admin_weekly_recap_path(week: @selected_week, truck_id: prev_truck.id), class: "px-4 py-2 bg-green-200 hover:bg-green-300 rounded flex items-center gap-2" do
             i.fas.fa-chevron-left
             span Camion précédent
@@ -47,8 +49,6 @@
           .text-center
             .text-xl.font-bold = @current_truck.name
 
-
-          - next_truck = @trucks.where("id > ?", @current_truck.id).first || @trucks.first
           = link_to admin_weekly_recap_path(week: @selected_week, truck_id: next_truck.id), class: "px-4 py-2 bg-green-200 hover:bg-green-300 rounded flex items-center gap-2" do
             span Camion suivant
             i.fas.fa-chevron-right
@@ -60,9 +60,10 @@
       .flex.mb-2
         .w-32.flex-shrink-0.text-sm.font-medium.text-gray-600
           | Jour
-        .flex-1.flex
-          - (7..18).each do |hour|
-            .flex-1.text-center.text-xs.font-medium.text-gray-600.border-l.border-gray-200 style="min-width: 50px;"
+        .flex-1.relative style="min-width: 550px;"
+          - (7..20).each do |hour|
+            - left_pct = ((hour - 7).to_f / 13 * 100).round(4)
+            .absolute.text-xs.font-medium.text-gray-600.border-l.border-gray-200 style="left: #{left_pct}%; transform: translateX(-50%);"
               = "#{hour}h"
 
       / Lignes des jours
@@ -82,17 +83,17 @@
               .text-xs.text-red-500.mt-1 Pas de conducteur
 
           / Timeline du jour
-          .flex-1.relative style="min-width: 550px; background: repeating-linear-gradient(to right, transparent, transparent 49px, #e5e7eb 49px, #e5e7eb 50px);"
+          .flex-1.relative style="min-width: 550px; background: repeating-linear-gradient(to right, transparent, transparent calc(#{(1.0/13*100).round(4)}% - 1px), #e5e7eb calc(#{(1.0/13*100).round(4)}% - 1px), #e5e7eb #{(1.0/13*100).round(4)}%);"
             - if interventions.any?
               - interventions.each do |intervention|
                 - start_hour = intervention.start_time.hour
                 - start_minute = intervention.start_time.min
                 - duration_minutes = intervention.duration_in_minutes
 
-                - left_offset = ((start_hour - 7) * 50) + (start_minute * 50 / 60.0)
-                - width = duration_minutes * 50 / 60.0
+                - left_pct = (((start_hour - 7) * 60 + start_minute).to_f / (13 * 60) * 100).round(4)
+                - width_pct = (duration_minutes.to_f / (13 * 60) * 100).round(4)
 
-                .absolute.rounded.px-2.py-1.text-xs.text-white.shadow class=(intervention.chantier.two_operators ? "bg-orange-400 border border-orange-500" : "bg-blue-400 border border-blue-500") style="left: #{left_offset}px; width: #{width}px; top: 10px; height: 60px; overflow: hidden;"
+                .absolute.rounded.px-2.py-1.text-xs.text-white.shadow class=(intervention.chantier.two_operators ? "bg-orange-400 border border-orange-500" : "bg-blue-400 border border-blue-500") style="left: #{left_pct}%; width: #{width_pct}%; top: 10px; height: 60px; overflow: hidden;"
                   .font-medium.truncate = intervention.chantier.name
                   .text-xs.opacity-90
                     = "#{intervention.start_time.strftime('%H:%M')} - #{intervention.end_time.strftime('%H:%M')}"
