@@ -11,19 +11,17 @@ export default class extends Controller {
 	}
 
 	openMap() {
-		// Compter le nombre total d'interventions
-		const totalInterventions = this.trucksValue.reduce(
-			(sum, truck) => sum + truck.interventions.length,
-			0
+		const trucksWithInterventions = this.trucksValue.filter(
+			(truck) => truck.interventions.length > 0,
 		);
 
-		if (totalInterventions === 0) {
+		if (trucksWithInterventions.length === 0) {
 			alert("Aucun chantier planifié pour cette journée");
 			return;
 		}
 
+		this._filteredTrucks = trucksWithInterventions;
 		this.createModal();
-
 		setTimeout(() => {
 			this.initMap();
 		}, 100);
@@ -38,7 +36,7 @@ export default class extends Controller {
 
 		const modalHTML = `
       <div id="global-map-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[90vh] flex flex-col">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
           <div class="flex justify-between items-center p-4 border-b">
             <h3 class="text-xl font-bold">🗺️ Vue d'ensemble - Tous les chantiers du jour</h3>
             <button onclick="document.getElementById('global-map-modal').classList.add('hidden')"
@@ -48,7 +46,7 @@ export default class extends Controller {
           </div>
           <div class="flex flex-1">
             <div id="global-map-container" class="flex-1" style="min-height: 600px;"></div>
-            <div class="w-64 p-4 border-l overflow-y-auto bg-gray-50">
+            <div class="w-64 p-4 border-l overflow-y-auto bg-gray-50" style="max-height: 500px;">
               <h4 class="font-bold mb-3">Légende</h4>
               <div id="legend-container" class="space-y-2"></div>
             </div>
@@ -92,7 +90,7 @@ export default class extends Controller {
 		let legendHTML = "";
 
 		// Pour chaque camion
-		this.trucksValue.forEach((truck, truckIndex) => {
+		this._filteredTrucks.forEach((truck, truckIndex) => {
 			const color = colors[truckIndex % colors.length];
 			const truckNumber = truckIndex + 1;
 

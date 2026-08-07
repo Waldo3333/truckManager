@@ -56,38 +56,6 @@
         .p-4.border-b.border-gray-200.flex-shrink-0
           h2.text-lg.font-bold Chantiers à planifier
 
-<<<<<<< HEAD
-        - unless @chantiers.empty?
-          .space-y-2 data-chantiers-list="true"
-            - @chantiers.each do |chantier|
-              .bg-gray-50.border.border-gray-300.rounded.p-3.cursor-move data-chantier-id=chantier.id data-chantier-duration=chantier.duration data-chantier-name=chantier.name
-                / En-tête avec nom et bouton carte
-                .flex.justify-between.items-start.mb-1
-                  .font-medium.text-sm.flex-1 = chantier.name
-                  - if chantier.latitude.present? && chantier.longitude.present?
-                    button.cursor-pointer.ml-2.text-blue-500.hover:text-blue-700.transition-colors data-controller="chantier-map" data-chantier-map-latitude-value=chantier.latitude data-chantier-map-longitude-value=chantier.longitude data-chantier-map-name-value=chantier.name data-action="click->chantier-map#openMap" type="button" title="Voir sur la carte"
-                      i class="fa-solid fa-map-location-dot"
-
-                .text-xs.text-gray-500 = chantier.location
-                .text-xs.text-blue-600.mt-1
-                  = "📏 #{chantier.duration} min (#{chantier.duration_in_hours}h)"
-                - if chantier.scheduled_date.present?
-                  .text-xs.text-green-600.mt-1 = "📅 #{l(chantier.scheduled_date, format: :long)}"
-                - else
-                  .text-xs.text-gray-400.italic.mt-1 Aucune date prévue
-                .text-xs.text-gray-500
-
-                .flex.mt-2.items-center.gap-2
-                  - if chantier.extra_equipment || chantier.two_operators
-                    p.text-xs ⚠️
-                  - if chantier.extra_equipment
-                    i class="fa-solid fa-screwdriver-wrench text-xs text-black opacity-90"
-                  - if chantier.two_operators
-                    i class="fa-solid fa-people-arrows text-xs text-black"
-
-        - else
-          p.text-gray-500.text-sm.italic Aucun chantier disponible
-=======
         .p-4.overflow-y-auto.flex-1
           - if @chantiers.empty?
             p.text-gray-500.text-sm.italic Aucun chantier disponible
@@ -95,11 +63,15 @@
             .space-y-2 data-chantiers-list="true"
               - @chantiers.each do |chantier|
                 .bg-gray-50.border.border-gray-300.rounded.p-3.cursor-move data-chantier-id=chantier.id data-chantier-duration=chantier.duration data-chantier-name=chantier.name
-                  .font-medium.text-sm.flex.items-center.gap-1
-                    = chantier.name
-                    - if chantier.copy?
-                      span.text-orange-400.text-xs title="Copie d'un chantier"
-                        i class="fa-solid fa-copy"
+                  .flex.justify-between.items-start.mb-1
+                    .font-medium.text-sm.flex.items-center.gap-1.flex-1
+                      = chantier.name
+                      - if chantier.copy?
+                        span.text-orange-400.text-xs title="Copie d'un chantier"
+                          i class="fa-solid fa-copy"
+                    - if chantier.latitude.present? && chantier.longitude.present?
+                      button.cursor-pointer.ml-2.text-blue-500.hover:text-blue-700.transition-colors data-controller="chantier-map" data-chantier-map-latitude-value=chantier.latitude data-chantier-map-longitude-value=chantier.longitude data-chantier-map-name-value=chantier.name data-action="click->chantier-map#openMap" type="button" title="Voir sur la carte"
+                        i class="fa-solid fa-map-location-dot"
                   .text-xs.text-gray-500 = chantier.location
                   .text-xs.text-blue-600.mt-1
                     = "📏 #{chantier.duration} min (#{chantier.duration_in_hours}h)"
@@ -114,8 +86,6 @@
                       i class="fa-solid fa-screwdriver-wrench text-xs text-black opacity-90"
                     - if chantier.two_operators
                       i class="fa-solid fa-people-arrows text-xs text-black"
->>>>>>> e5891dcd162404e9a5a4166601e08ee1225b5c14
-
     / Timeline principale
     .flex-1.overflow-x-auto.min-w-0
       .bg-white.rounded-lg.shadow.p-4
