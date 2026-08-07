@@ -10,5 +10,8 @@ class Admin::DashboardController < ApplicationController
     @trucks = Truck.all.order(:name)
     @week_start = Date.today.beginning_of_week
     @week_end = Date.today.end_of_week
+    @chantiers_a_planifier = Chantier.left_joins(:interventions).where(interventions: { id: nil }).count
+@chantiers_planifies = Chantier.joins(:interventions).where("interventions.date >= ?", Date.today).distinct.count
+
   end
 end

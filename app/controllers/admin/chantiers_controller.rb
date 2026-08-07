@@ -2,8 +2,13 @@ class Admin::ChantiersController < ApplicationController
   before_action :require_admin
   before_action :set_chantier, only: [:edit, :show, :update, :destroy, :duplicate]
 
+
   def index
-    @chantiers = Chantier.visible.order(created_at: :desc)
+    base = Chantier.visible.order(created_at: :desc)
+
+    @chantiers_non_programmes = base.left_joins(:interventions).where(interventions: { id: nil })
+    @chantiers_programmes = base.joins(:interventions).where("interventions.date >= ?", Date.today).distinct
+    @chantiers_termines = base.joins(:interventions).where("interventions.date < ?", Date.today).distinct
   end
 
   def show
