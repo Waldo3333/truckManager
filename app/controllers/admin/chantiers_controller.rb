@@ -4,7 +4,7 @@ class Admin::ChantiersController < ApplicationController
 
 
   def index
-    base = Chantier.visible.order(created_at: :desc)
+    base = Chantier.visible.includes(:copy_chantier).order(created_at: :desc)
 
     @chantiers_non_programmes = base.left_joins(:interventions).where(interventions: { id: nil })
     @chantiers_programmes = base.joins(:interventions).where("interventions.date >= ?", Date.today).distinct
