@@ -19,7 +19,11 @@ Rails.application.routes.draw do
     get 'planning', to: 'planning#index'
     get 'weekly_recap', to: 'weekly_recap#index'
 
-    resources :chantiers
+    resources :chantiers do
+      member do
+        post :duplicate
+      end
+    end
     resources :trucks
     resources :users
     resources :daily_assignments, only: [:create, :update, :destroy]
