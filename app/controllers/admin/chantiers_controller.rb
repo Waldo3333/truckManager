@@ -56,6 +56,6 @@ class Admin::ChantiersController < ApplicationController
   end
 
   def chantier_params
-    params.require(:chantier).permit(:name, :location, :duration, :scheduled_date, :email, :phone, :description, :extra_equipment, :two_operators)
+    params.require(:chantier).permit(:name, :location, :duration, :scheduled_date, :email, :phone, :description, :extra_equipment, :two_operators, :latitude, :longitude )
   end
 end

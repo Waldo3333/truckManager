@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
+ActiveRecord::Schema[7.1].define(version: 2025_12_13_223145) do
+=======
 ActiveRecord::Schema[7.1].define(version: 2026_08_02_112435) do
+>>>>>>> e5891dcd162404e9a5a4166601e08ee1225b5c14
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -28,6 +32,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_02_112435) do
     t.boolean "two_operators", default: false
     t.decimal "latitude", precision: 10, scale: 6
     t.decimal "longitude", precision: 10, scale: 6
+<<<<<<< HEAD
+=======
     t.bigint "company_id"
     t.bigint "client_id"
     t.boolean "copy", default: false, null: false
@@ -54,6 +60,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_02_112435) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+>>>>>>> e5891dcd162404e9a5a4166601e08ee1225b5c14
   end
 
   create_table "daily_assignments", force: :cascade do |t|
