@@ -94,48 +94,45 @@ export default class extends Controller {
 			const color = colors[truckIndex % colors.length];
 			const truckNumber = truckIndex + 1;
 
-			// Ajouter à la légende
 			legendHTML += `
-        <div class="flex items-center gap-2 p-2 bg-white rounded border">
-          <div style="background: ${color}; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-            ${truckNumber}
-          </div>
-          <div>
-            <div class="font-medium text-sm">${truck.name}</div>
-            <div class="text-xs text-gray-500">${truck.interventions.length} chantier(s)</div>
-          </div>
-        </div>
-      `;
+    <div class="flex items-center gap-2 p-2 bg-white rounded border">
+      <div style="background: ${color}; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+        ${truckNumber}
+      </div>
+      <div>
+        <div class="font-medium text-sm">${truck.name}</div>
+        <div class="text-xs text-gray-500">${truck.interventions.length} chantier(s)</div>
+      </div>
+    </div>
+  `;
 
-			// Ajouter les marqueurs pour ce camion
 			truck.interventions.forEach((intervention) => {
+				if (!intervention.latitude || !intervention.longitude) return;
+
 				const marker = L.marker([
 					intervention.latitude,
 					intervention.longitude,
 				]).addTo(this.map);
-
 				allBounds.push([intervention.latitude, intervention.longitude]);
 
-				// Popup avec infos
 				const popupContent = `
-          <div class="p-2">
-            <div class="font-bold text-sm mb-1" style="color: ${color};">
-              🚛 ${truck.name}
-            </div>
-            <div class="font-medium text-sm">${intervention.name}</div>
-            <div class="text-xs text-gray-600 mt-1">${intervention.location}</div>
-            <div class="text-xs text-blue-600 mt-1">
-              ⏰ ${intervention.start_time} - ${intervention.end_time}
-            </div>
-            <div class="text-xs text-gray-500">
-              📏 ${intervention.duration} min
-            </div>
-          </div>
-        `;
+      <div class="p-2">
+        <div class="font-bold text-sm mb-1" style="color: ${color};">
+          🚛 ${truck.name}
+        </div>
+        <div class="font-medium text-sm">${intervention.name}</div>
+        <div class="text-xs text-gray-600 mt-1">${intervention.location}</div>
+        <div class="text-xs text-blue-600 mt-1">
+          ⏰ ${intervention.start_time} - ${intervention.end_time}
+        </div>
+        <div class="text-xs text-gray-500">
+          📏 ${intervention.duration} min
+        </div>
+      </div>
+    `;
 
 				marker.bindPopup(popupContent);
 
-				// Icône personnalisée avec le numéro du camion et sa couleur
 				const icon = L.divIcon({
 					className: "custom-marker",
 					html: `<div style="background: ${color}; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.4); font-size: 14px;">${truckNumber}</div>`,

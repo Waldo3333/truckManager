@@ -14,38 +14,38 @@
             span Modifications non sauvegardées :
             span data-planning-target="pendingCount" 0
         .flex.gap-2
-          button.bg-green-500.text-white.px-6.py-3.rounded-lg.hover:bg-green-600.shadow-lg.flex.items-center.gap-2.font-medium data-action="click->planning#saveAllChanges" type="button"
+          button.bg-green-500.cursor-pointer.text-white.px-6.py-3.rounded-lg.hover:bg-green-600.shadow-lg.flex.items-center.gap-2.font-medium data-action="click->planning#saveAllChanges" type="button"
             span 💾
             span Sauvegarder
-          button.bg-gray-500.text-white.px-4.py-3.rounded-lg.hover:bg-gray-600.shadow-lg.flex.items-center.gap-2.font-medium data-action="click->planning#cancelAllChanges" type="button"
+          button.bg-gray-500.cursor-pointer.text-white.px-4.py-3.rounded-lg.hover:bg-gray-600.shadow-lg.flex.items-center.gap-2.font-medium data-action="click->planning#cancelAllChanges" type="button"
             span ↺
             span Annuler
 
   / Sélecteur de date
   .flex.justify-center.bg-white.rounded-lg.shadow.p-4.mb-6.gap-4
     / Flèche jour précédent
-    button.p-2.hover:bg-gray-100.rounded-full.transition-colors data-action="click->planning-button#prevDay" type="button"
-      .flex.items-center.gap-2.bg-green-300.p-2.rounded-2xl.w-max
+    button.p-2 data-action="click->planning-button#prevDay" type="button"
+      .flex.items-center.cursor-pointer.gap-2.bg-green-300.p-2.rounded-2xl.justify-end.w-max.hover:bg-green-500
           i.fas.fa-chevron-left.text-gray-600
           p Précedent
+    / form date
     = form_with url: admin_planning_path, method: :get, local: true, class: "flex gap-4 items-center", data: { turbo: false } do |f|
       label.text-sm.font-medium.text-gray-700 Date
       = f.date_field :date, value: @selected_date, class: "px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", onchange: "this.form.submit()"
 
     / Flèche jour suivant + Bouton fermer
     .flex.items-center.gap-2
-      button.p-2.hover:bg-gray-100.rounded-full.transition-colors data-action="click->planning-button#nextDay" type="button"
-        .flex.items-center.gap-2.bg-green-300.p-2.rounded-2xl.justify-end.w-max
+      button.p-2 data-action="click->planning-button#nextDay" type="button"
+        .flex.items-center.cursor-pointer.gap-2.bg-green-300.p-2.rounded-2xl.justify-end.w-max.hover:bg-green-500
           p Suivant
           i.fas.fa-chevron-right.text-gray-600
     / Bouton Vue globale
-    .flex.justify-center.mb-6
+    .flex.items-center
       - all_interventions_data = @trucks.map do |truck|
-        - truck_interventions = truck.interventions.where(date: @selected_date).includes(:chantier).order(:start_time).select { |i| i.chantier.latitude.present? && i.chantier.longitude.present? }
-        - { name: truck.name, interventions: truck_interventions.map { |intervention| { name: intervention.chantier.name, location: intervention.chantier.location, latitude: intervention.chantier.latitude, longitude: intervention.chantier.longitude, start_time: intervention.start_time.strftime('%H:%M'), end_time: intervention.end_time.strftime('%H:%M'), duration: intervention.duration_in_minutes } } }
-
-      button.bg-blue-500.text-white.px-6.py-3.rounded-lg.hover:bg-blue-600.shadow-lg.flex.items-center.gap-2.font-medium data-controller="global-day-map" data-global-day-map-trucks-value=all_interventions_data.to_json data-action="click->global-day-map#openMap" type="button"
-        span 🗺️
+        - truck_interventions = truck.interventions.where(date: @selected_date).includes(:chantier).order(:start_time)
+        - { name: truck.name, interventions: truck_interventions.map { |i| { name: i.chantier.name, location: i.chantier.location, latitude: i.chantier.latitude, longitude: i.chantier.longitude, start_time: i.start_time.strftime('%H:%M'), end_time: i.end_time.strftime('%H:%M'), duration: i.duration_in_minutes } } }
+      button.bg-green-300.cursor-pointer.px-6.py-3.rounded-lg.flex.items-center.gap-2.font-medium.hover:bg-green-500 data-controller="global-day-map" data-global-day-map-trucks-value=all_interventions_data.to_json data-action="click->global-day-map#openMap" type="button"
+        i class="fa-solid fa-map-location-dot"
         span Vue globale de la journée
 
   / Layout : Sidebar + Timeline
@@ -128,7 +128,7 @@
                     = button_to "×", admin_daily_assignment_path(assignment), method: :delete, data: { turbo_confirm: "Retirer ce conducteur ?" }, class: "text-red-500 hover:text-red-700 font-bold", title: "Retirer le conducteur"
               - else
                 / Pas de conducteur
-                button.w-full.text-xs.text-gray-500.hover:text-blue-600.border.border-dashed.border-gray-300.hover:border-blue-400.rounded.px-2.py-1.transition-colors data-action="click->modal#open" data-truck-id=truck.id data-date=@selected_date type="button"
+                button.w-full.text-xs.cursor-pointer.text-gray-500.hover:text-blue-600.border.border-dashed.border-gray-300.hover:border-blue-400.rounded.px-2.py-1.transition-colors data-action="click->modal#open" data-truck-id=truck.id data-date=@selected_date type="button"
                   | + Assigner
 
             / Timeline des cards camions
